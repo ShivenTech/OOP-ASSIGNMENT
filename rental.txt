@@ -41,7 +41,7 @@ public class Rental {
         System.out.println("=====================================");
         System.out.println("Rental ID    : " + rentalId);
         System.out.println("Customer Name: " + renter.getName());
-        System.out.println("Customer IC  : " + renter.getIcNumber());
+        System.out.println("Customer IC  : " + renter.getCustomerId());
         System.out.println("Car Details  : " + rentedCar.getBrandModel() + " (" + rentedCar.getPlateNumber() + ")");
         System.out.println("Rental Days  : " + rentalDays + " days");
         System.out.println("Total Cost   : RM " + String.format("%.2f", totalCost));
@@ -49,15 +49,15 @@ public class Rental {
         System.out.println("=====================================\n");
     }
 
-    // ==========================================
-    // TXT FILE FORMATTER (New for your storage method!)
-    // ==========================================
+    // ==================
+    // TXT FILE FORMATTER 
+    // ==================
     // This creates a comma-separated string that is easy to save to a .txt file
     // Example output: R1001,VHA1234,010523011234,3,360.0,true
     public String toTextFileFormat() {
         return rentalId + "," + 
                rentedCar.getPlateNumber() + "," + 
-               renter.getIcNumber() + "," + 
+               renter.getCustomerId() + "," + 
                rentalDays + "," + 
                totalCost + "," + 
                isActive;
