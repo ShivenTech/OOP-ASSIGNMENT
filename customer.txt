@@ -55,3 +55,6 @@ public class Customer {
 
 }
 
+
+
+System.out.println("Hello world");
