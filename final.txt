@@ -59,6 +59,38 @@ public class Main {
         }
     }
 
+ // ==========================================
+    // CUSTOMER MODULE: CREATE
+    // ==========================================
+    public static void registerCustomer() {
+        System.out.println("\n--- REGISTER NEW CUSTOMER ---");
+        System.out.print("Enter Customer ID: ");
+        String id = scanner.next();
+        scanner.nextLine(); // Consume newline
+
+        System.out.print("Enter Full Name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter Driving License Number: ");
+        String license = scanner.nextLine();
+
+        System.out.print("Enter Contact Number: ");
+        String contact = scanner.nextLine();
+
+        System.out.print("Enter Email: ");
+        String email = scanner.nextLine();
+
+        Customer newCust = new Customer(id, name, license, contact, email);
+        
+        // Add to the local list for this session
+        customerList.add(newCust);
+        
+        // Use the method from your Customer class to save to file
+        newCust.saveToFile();
+        
+        System.out.println("Customer registered successfully in system memory.");
+    }
+
     // ==========================================
     // RENTAL MODULE: CREATE (Rent a Car)
     // ==========================================
@@ -195,3 +227,4 @@ public class Main {
         }
     */
 }
+
