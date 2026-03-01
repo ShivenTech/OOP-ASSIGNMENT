@@ -2,7 +2,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
 
-public abstract class Halo {
+public abstract class CAR {
 
     static final int MAX_ATTEMPTS = 5;
     static final int GIVE_UP = Integer.MIN_VALUE;
