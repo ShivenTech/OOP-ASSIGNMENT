@@ -1,1 +1,571 @@
-car
+import java.util.List;
+import java.util.Scanner;
+import java.util.ArrayList;
+
+public abstract class Halo {
+
+    static final int MAX_ATTEMPTS = 5;
+    static final int GIVE_UP = Integer.MIN_VALUE;
+    static final String STAFF_PASSWORD = "staff123";  // ← change this to your password
+
+    public static int readIntInRange(Scanner sc, String prompt, int min, int max) {
+        int attempts = 0;
+        while (attempts < MAX_ATTEMPTS) {
+            System.out.print(prompt);
+            String line = sc.nextLine().trim();
+            int value;
+            try {
+                value = Integer.parseInt(line);
+            } catch (NumberFormatException e) {
+                attempts++;
+                int remaining = MAX_ATTEMPTS - attempts;
+                if (remaining > 0)
+                    System.out.println("  !! Invalid input. Please enter a number only. ("
+                            + remaining + " attempt(s) left)");
+                else
+                    System.out.println("  !! Too many invalid attempts. Returning to main menu...");
+                continue;
+            }
+            if (value >= min && value <= max) return value;
+            attempts++;
+            int remaining = MAX_ATTEMPTS - attempts;
+            if (remaining > 0)
+                System.out.println("  !! Invalid selection. Please enter a number between "
+                        + min + " and " + max + ". (" + remaining + " attempt(s) left)");
+            else
+                System.out.println("  !! Too many invalid attempts. Returning to main menu...");
+        }
+        return GIVE_UP;
+    }
+
+    private static String readNonEmptyString(Scanner sc, String prompt) {
+        int attempts = 0;
+        while (attempts < MAX_ATTEMPTS) {
+            System.out.print(prompt);
+            String value = sc.nextLine().trim();
+            if (!value.isEmpty()) return value;
+            attempts++;
+            int remaining = MAX_ATTEMPTS - attempts;
+            if (remaining > 0)
+                System.out.println("  !! Input cannot be empty. (" + remaining + " attempt(s) left)");
+            else
+                System.out.println("  !! Too many invalid attempts. Returning to main menu...");
+        }
+        return null;
+    }
+
+    private static double readPositiveDouble(Scanner sc, String prompt) {
+        int attempts = 0;
+        while (attempts < MAX_ATTEMPTS) {
+            System.out.print(prompt);
+            String line = sc.nextLine().trim();
+            try {
+                double value = Double.parseDouble(line);
+                if (value > 0) return value;
+                attempts++;
+                System.out.println("  !! Value must be greater than 0. ("
+                        + (MAX_ATTEMPTS - attempts) + " attempt(s) left)");
+            } catch (NumberFormatException e) {
+                attempts++;
+                System.out.println("  !! Invalid input. Please enter a number. ("
+                        + (MAX_ATTEMPTS - attempts) + " attempt(s) left)");
+            }
+            if (attempts >= MAX_ATTEMPTS)
+                System.out.println("  !! Too many invalid attempts. Returning to main menu...");
+        }
+        return -1;
+    }
+
+    // ── MAIN ─────────────────────────────────────────────────────────────────
+    public static void main(String[] args) {
+        Scanner inputCar = new Scanner(System.in);
+        List<Car> availableCars = new ArrayList<>();
+
+        // Economy Cars
+        availableCars.add(new Car(101, "ABC1233", "Toyota",     "Vios",          2023, 45.0,  'A', true, 5000, "Economy", 200.0));
+        availableCars.add(new Car(102, "DEF4561", "Honda",      "City",          2023, 48.0,  'A', true, 6000, "Economy", 200.0));
+        availableCars.add(new Car(103, "GHI7894", "Nissan",     "Almera",        2022, 42.0,  'M', true, 8000, "Economy", 200.0));
+        availableCars.add(new Car(104, "JKL0125", "Mitsubishi", "Mirage",        2023, 40.0,  'M', true, 4000, "Economy", 200.0));
+        availableCars.add(new Car(105, "MQL2242", "Toyota",     "Camry",         2024, 60.0,  'A', true, 4500, "Economy", 200.0));
+        availableCars.add(new Car(106, "MDS1116", "Honda",      "Accord",        2021, 46.0,  'A', true, 6000, "Economy", 200.0));
+        availableCars.add(new Car(107, "BJJ3301", "Volkswagen", "Passat",        2021, 53.0,  'A', true, 5000, "Economy", 200.0));
+        availableCars.add(new Car(108, "KQV2226", "Perodua",    "Bezza",         2024, 43.0,  'A', true, 3800, "Economy", 200.0));
+        availableCars.add(new Car(109, "SED5631", "Toyota",     "Altis",         2024, 58.0,  'A', true, 5600, "Economy", 200.0));
+        availableCars.add(new Car(110, "WMN4498", "Nissan",     "Sentra",        2024, 58.0,  'A', true, 4000, "Economy", 200.0));
+
+        // SUV Cars
+        availableCars.add(new Car(201, "MNO3453", "Toyota",     "Fortuner",      2024, 120.0, 'A', true, 2000, "SUV", 500.0));
+        availableCars.add(new Car(202, "PQR6782", "Honda",      "CR-V",          2023, 120.0, 'A', true, 3500, "SUV", 500.0));
+        availableCars.add(new Car(203, "STU9014", "Mitsubishi", "Montero",       2024, 125.0, 'A', true, 1500, "SUV", 500.0));
+        availableCars.add(new Car(204, "VWX2346", "Ford",       "Everest",       2023, 125.0, 'A', true, 4200, "SUV", 500.0));
+        availableCars.add(new Car(205, "BYS9902", "Honda",      "HR-V",          2024, 130.0, 'A', true, 3300, "SUV", 500.0));
+        availableCars.add(new Car(206, "WMS7768", "Honda",      "BR-V",          2023, 125.0, 'A', true, 3400, "SUV", 500.0));
+        availableCars.add(new Car(207, "MNO3454", "Toyota",     "Corolla Cross", 2024, 150.0, 'A', true, 2500, "SUV", 500.0));
+        availableCars.add(new Car(208, "JYB7865", "Toyota",     "Rush",          2024, 145.0, 'A', true, 3000, "SUV", 500.0));
+        availableCars.add(new Car(209, "BHY9803", "Mitsubishi", "Outlander",     2024, 155.0, 'A', true, 2000, "SUV", 500.0));
+        availableCars.add(new Car(210, "VWX2347", "Ford",       "Edge",          2024, 145.0, 'A', true, 3200, "SUV", 500.0));
+
+        // Luxury Cars
+        availableCars.add(new Car(301, "YZA5637", "Mercedes", "C-Class",  2024, 200.0, 'A', true, 1000, "Luxury", 1000.0));
+        availableCars.add(new Car(302, "BCD8904", "BMW",      "3 Series", 2024, 210.0, 'A', true,  800, "Luxury", 1000.0));
+        availableCars.add(new Car(303, "EFG1235", "Audi",     "A4",       2023, 210.0, 'A', true, 2500, "Luxury", 1000.0));
+        availableCars.add(new Car(304, "HIJ4566", "Lexus",    "ES",       2024, 220.0, 'A', true,  500, "Luxury", 1000.0));
+        availableCars.add(new Car(305, "SYH7781", "Audi",     "A8",       2023, 230.0, 'A', true, 1500, "Luxury", 1000.0));
+        availableCars.add(new Car(306, "BJJ9930", "BMW",      "M5",       2024, 280.0, 'A', true, 1600, "Luxury", 1000.0));
+        availableCars.add(new Car(307, "BYY1111", "Mercedes", "S-Class",  2024, 300.0, 'A', true, 1000, "Luxury", 1000.0));
+        availableCars.add(new Car(308, "KJL8888", "Nissan",   "GT-R35",   2022, 280.0, 'A', true, 2500, "Luxury", 1000.0));
+        availableCars.add(new Car(309, "KJL9999", "Nissan",   "GT-R33",   2022, 290.0, 'A', true, 2700, "Luxury", 1000.0));
+        availableCars.add(new Car(310, "UJR6677", "Audi",     "RS7",      2023, 290.0, 'A', true, 1500, "Luxury", 1000.0));
+
+        int choice;
+        do {
+            System.out.println("\n=================================================");
+            System.out.println("         WELCOME TO CAR RENTAL SYSTEM");
+            System.out.println("=================================================");
+            System.out.println("1. Browse category");
+            System.out.println("2. Search car brand");
+            System.out.println("3. View available cars");
+            System.out.println("4. Exit");
+            System.out.println("=================================================");
+
+            choice = 0;
+            while (choice < 1 || choice > 4) {
+                System.out.print("Enter your choice (1-4): ");
+                String line = inputCar.nextLine().trim();
+                try {
+                    int parsed = Integer.parseInt(line);
+                    if (parsed >= 1 && parsed <= 4) {
+                        choice = parsed;
+                    } else {
+                        System.out.println("  !! Please enter a number between 1 and 4. Try again.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("  !! Invalid input. Please enter a number only. Try again.");
+                }
+            }
+
+            switch (choice) {
+                case 1:
+                    browsecategory(availableCars, inputCar);   
+                    break;
+                case 2:
+                     searchcarbrand(availableCars, inputCar);  
+                break;
+                case 3: 
+                    viewavailablecars(availableCars, inputCar); 
+                break;
+                case 4: 
+                    System.out.println("Thanks for using the system, byebye!"); 
+                    break;
+                default:
+                    System.out.println("Invalid bro try again lah.");
+            }
+        } while (choice != 4);
+        inputCar.close();
+    }
+
+    // ── ADD NEW CAR (Staff Only) ──────────────────────────────────────────────
+    public static void addNewCar(List<Car> cars, Scanner sc) {
+
+        // ── Staff password check (max 3 tries) ───────────────────────────────
+        System.out.println("\n========== STAFF ACCESS REQUIRED ==========");
+        int pwAttempts = 0;
+        boolean authenticated = false;
+        while (pwAttempts < 3) {
+            System.out.print("Enter staff password: ");
+            String pw = sc.nextLine().trim();
+            if (pw.equals(STAFF_PASSWORD)) {
+                authenticated = true;
+                break;
+            }
+            pwAttempts++;
+            int remaining = 3 - pwAttempts;
+            if (remaining > 0)
+                System.out.println("  !! Wrong password. (" + remaining + " attempt(s) left)");
+            else
+                System.out.println("  !! Too many wrong attempts. Returning to main menu...");
+        }
+        if (!authenticated) return;
+
+        System.out.println("  >> Access granted. Welcome, Staff!\n");
+        System.out.println("========== ADD NEW CAR ==========");
+
+        // Vehicle ID (must be unique)
+        int newId = -1;
+        int attempts = 0;
+        while (attempts < MAX_ATTEMPTS) {
+            System.out.print("Enter Vehicle ID (number): ");
+            String line = sc.nextLine().trim();
+            try {
+                newId = Integer.parseInt(line);
+            } catch (NumberFormatException e) {
+                attempts++;
+                System.out.println("  !! Invalid input. Please enter a number only. ("
+                        + (MAX_ATTEMPTS - attempts) + " attempt(s) left)");
+                if (attempts >= MAX_ATTEMPTS) {
+                    System.out.println("  !! Too many invalid attempts. Returning to main menu...");
+                    return;
+                }
+                continue;
+            }
+            boolean duplicate = false;
+            for (Car c : cars) {
+                if (c.getVehicleId() == newId) { duplicate = true; break; }
+            }
+            if (duplicate) {
+                attempts++;
+                System.out.println("  !! Vehicle ID " + newId + " already exists. ("
+                        + (MAX_ATTEMPTS - attempts) + " attempt(s) left)");
+                if (attempts >= MAX_ATTEMPTS) {
+                    System.out.println("  !! Too many invalid attempts. Returning to main menu...");
+                    return;
+                }
+            } else {
+                break;
+            }
+        }
+
+        // Plate Number
+        String newPlate = readNonEmptyString(sc, "Enter Plate Number (e.g. ABC1234): ");
+        if (newPlate == null) return;
+
+        // Brand
+        String newBrand = readNonEmptyString(sc, "Enter Car Brand (e.g. Toyota): ");
+        if (newBrand == null) return;
+
+        // Model
+        String newModel = readNonEmptyString(sc, "Enter Car Model (e.g. Vios): ");
+        if (newModel == null) return;
+
+        // Year
+        int newYear = readIntInRange(sc, "Enter Car Year (2000-2026): ", 2000, 2026);
+        if (newYear == GIVE_UP) return;
+
+        // Daily Rate
+        double newRate = readPositiveDouble(sc, "Enter Daily Rate (RM): ");
+        if (newRate < 0) return;
+
+        // Transmission
+        char newTrans = ' ';
+        attempts = 0;
+        while (attempts < MAX_ATTEMPTS) {
+            System.out.print("Enter Transmission (A = Auto, M = Manual): ");
+            String line = sc.nextLine().trim().toUpperCase();
+            if (line.equals("A") || line.equals("M")) {
+                newTrans = line.charAt(0);
+                break;
+            }
+            attempts++;
+            System.out.println("  !! Please enter A or M only. ("
+                    + (MAX_ATTEMPTS - attempts) + " attempt(s) left)");
+            if (attempts >= MAX_ATTEMPTS) {
+                System.out.println("  !! Too many invalid attempts. Returning to main menu...");
+                return;
+            }
+        }
+
+        // Mileage
+        int newMileage = readIntInRange(sc, "Enter Mileage (km): ", 0, 999999);
+        if (newMileage == GIVE_UP) return;
+
+        // Category + auto-assign deposit
+        System.out.println("Select Category:");
+        System.out.println("  1. Economy  (Deposit: RM 200.00)");
+        System.out.println("  2. SUV      (Deposit: RM 500.00)");
+        System.out.println("  3. Luxury   (Deposit: RM 1000.00)");
+        int catChoice = readIntInRange(sc, "Choose category (1-3): ", 1, 3);
+        if (catChoice == GIVE_UP) return;
+
+        String newCategory;
+        double newDeposit;
+        switch (catChoice) {
+            case 1: newCategory = "Economy"; newDeposit = 200.0;  break;
+            case 2: newCategory = "SUV";     newDeposit = 500.0;  break;
+            case 3: newCategory = "Luxury";  newDeposit = 1000.0; break;
+            default: return;
+        }
+
+        // Summary & Confirm
+        System.out.println("\n---------- NEW CAR SUMMARY ----------");
+        System.out.printf("  Vehicle ID   : %d%n",      newId);
+        System.out.printf("  Plate        : %s%n",      newPlate);
+        System.out.printf("  Brand        : %s%n",      newBrand);
+        System.out.printf("  Model        : %s%n",      newModel);
+        System.out.printf("  Year         : %d%n",      newYear);
+        System.out.printf("  Daily Rate   : RM %.2f%n", newRate);
+        System.out.printf("  Transmission : %s%n",      newTrans == 'A' ? "Auto" : "Manual");
+        System.out.printf("  Mileage      : %d km%n",   newMileage);
+        System.out.printf("  Category     : %s%n",      newCategory);
+        System.out.printf("  Deposit      : RM %.2f%n", newDeposit);
+        System.out.println("-------------------------------------");
+
+        attempts = 0;
+        while (attempts < MAX_ATTEMPTS) {
+            System.out.print("Confirm adding this car? (Y/N): ");
+            String confirm = sc.nextLine().trim();
+            if (confirm.equalsIgnoreCase("Y")) {
+                cars.add(new Car(newId, newPlate, newBrand, newModel,
+                        newYear, newRate, newTrans, true, newMileage, newCategory, newDeposit));
+                System.out.println("\n>>> Car added successfully! "
+                        + newBrand + " " + newModel + " (ID: " + newId + ") is now available.");
+                return;
+            } else if (confirm.equalsIgnoreCase("N")) {
+                System.out.println("Car not added. Returning to main menu.");
+                return;
+            } else {
+                attempts++;
+                System.out.println("  !! Please enter Y or N only. ("
+                        + (MAX_ATTEMPTS - attempts) + " attempt(s) left)");
+                if (attempts >= MAX_ATTEMPTS)
+                    System.out.println("  !! Too many invalid attempts. Returning to main menu...");
+            }
+        }
+    }
+
+    // ── BROWSE CATEGORY ───────────────────────────────────────────────────────
+    public static void browsecategory(List<Car> cars, Scanner inputCar) {
+        System.out.println("\n---------- SELECT CATEGORY -------------");
+        System.out.println("1. Economy cars  (Deposit: RM 200.00)");
+        System.out.println("2. SUV cars      (Deposit: RM 500.00)");
+        System.out.println("3. Luxury cars   (Deposit: RM 1000.00)");
+        System.out.println("4. Back to Main Menu");
+
+        int choosecategory = readIntInRange(inputCar, "Choose the category (1-4): ", 1, 4);
+        if (choosecategory == GIVE_UP || choosecategory == 4) return;
+
+        String selectedCategory;
+        switch (choosecategory) {
+            case 1:
+                selectedCategory = "Economy"; 
+                break;
+            case 2:
+                selectedCategory = "SUV";    
+            break;
+            case 3:
+                selectedCategory = "Luxury";  
+            break;
+            default: 
+                return;
+        }
+
+        List<Car> categoryCars = new ArrayList<>();
+        for (Car car : cars)
+            if (car.getCategory().equals(selectedCategory) && car.isAvailable())
+                categoryCars.add(car);
+
+        if (categoryCars.isEmpty()) {
+            System.out.println("\nNo " + selectedCategory + " cars available at the moment.");
+            return;
+        }
+
+        // Show total count including any newly added cars
+        System.out.println("  >> " + categoryCars.size() + " car(s) found in " + selectedCategory + " category.");
+        printCarTable(selectedCategory.toUpperCase() + " CARS", categoryCars);
+        selectCar(categoryCars, inputCar, cars);
+    }
+
+    // ── SEARCH BY BRAND ───────────────────────────────────────────────────────
+    public static void searchcarbrand(List<Car> cars, Scanner inputCar) {
+        List<String> brands = new ArrayList<>();
+        for (Car car : cars)
+            if (car.isAvailable() && !brands.contains(car.getBrand()))
+                brands.add(car.getBrand());
+
+        System.out.println("\n---------- AVAILABLE CAR BRANDS -----------");
+        System.out.println("  (Includes all newly added cars)");
+        for (int i = 0; i < brands.size(); i++)
+            System.out.println("  " + (i + 1) + ". " + brands.get(i));
+        System.out.println("  0. Back to Main Menu");
+        System.out.println("-------------------------------------------");
+
+        int brandChoice = readIntInRange(inputCar, "Select brand number: ", 0, brands.size());
+        if (brandChoice == GIVE_UP || brandChoice == 0) return;
+
+        String selectedBrand = brands.get(brandChoice - 1);
+        List<Car> results = new ArrayList<>();
+        for (Car car : cars)
+            if (car.getBrand().equalsIgnoreCase(selectedBrand) && car.isAvailable())
+                results.add(car);
+
+        // Show total count including any newly added cars
+        System.out.println("  >> " + results.size() + " car(s) found for brand: " + selectedBrand);
+        printCarTable("RESULTS FOR: " + selectedBrand.toUpperCase(), results);
+        selectCar(results, inputCar, cars);
+    }
+
+    // ── VIEW ALL AVAILABLE ────────────────────────────────────────────────────
+    public static void viewavailablecars(List<Car> cars, Scanner inputCar) {
+        List<Car> available = new ArrayList<>();
+        for (Car car : cars)
+            if (car.isAvailable()) available.add(car);
+
+        if (available.isEmpty()) {
+            System.out.println("No cars are currently available.");
+            return;
+        }
+
+        printCarTable("ALL AVAILABLE CARS", available);
+        selectCar(available, inputCar, cars);
+    }
+
+    // ── PRINT CAR TABLE ───────────────────────────────────────────────────────
+    public static void printCarTable(String title, List<Car> cars) {
+        System.out.println("\n==================== " + title + " ====================");
+        System.out.printf("%-6s %-10s %-12s %-15s %-6s %-8s %-10s %-10s %-10s%n",
+                "ID", "Plate", "Brand", "Model", "Year", "Trans", "Mileage", "Rate/Day", "Category");
+        System.out.println("----------------------------------------------------------------------------------");
+        for (Car car : cars) {
+            System.out.printf("%-6d %-10s %-12s %-15s %-6d %-8s %-10d RM%-8.2f %-10s%n",
+                    car.getVehicleId(),
+                    car.getPlateNum(),
+                    car.getBrand(),
+                    car.getModel(),
+                    car.getCarYears(),
+                    car.getTransmission() == 'A' ? "Auto" : "Manual",
+                    car.getMileage(),
+                    car.getDailyrate(),
+                    car.getCategory());
+        }
+        System.out.println("----------------------------------------------------------------------------------");
+    }
+
+    // ── SELECT & BOOK CAR ─────────────────────────────────────────────────────
+    public static void selectCar(List<Car> cars, Scanner inputCar, List<Car> allCars) {
+        System.out.println("\n(Enter 0 to go back)");
+
+        int attempts = 0;
+        Car selected = null;
+        while (attempts < MAX_ATTEMPTS) {
+            System.out.print("Enter Vehicle ID to book: ");
+            String line = inputCar.nextLine().trim();
+            int selectedId;
+            try {
+                selectedId = Integer.parseInt(line);
+            } catch (NumberFormatException e) {
+                attempts++;
+                int remaining = MAX_ATTEMPTS - attempts;
+                if (remaining > 0)
+                    System.out.println("  !! Invalid input. Please enter a number only. (" + remaining + " attempt(s) left)");
+                else
+                    System.out.println("  !! Too many invalid attempts. Returning to main menu...");
+                continue;
+            }
+
+            if (selectedId == 0) return;
+
+            boolean found = false;
+            for (Car car : cars) {
+                if (car.getVehicleId() == selectedId) { selected = car; found = true; break; }
+            }
+
+            if (found) break;
+
+            attempts++;
+            int remaining = MAX_ATTEMPTS - attempts;
+            if (remaining > 0)
+                System.out.println("  !! Invalid Vehicle ID. Please try again. (" + remaining + " attempt(s) left)");
+            else
+                System.out.println("  !! Too many invalid attempts. Returning to main menu...");
+        }
+
+        if (selected == null) return;
+
+        int confirmAttempts = 0;
+        while (confirmAttempts < MAX_ATTEMPTS) {
+            System.out.print("Confirm booking for " + selected.getBrand()
+                    + " " + selected.getModel() + "? (Y/N): ");
+            String confirm = inputCar.nextLine().trim();
+
+            if (confirm.equalsIgnoreCase("Y")) {
+                for (Car car : allCars) {
+                    if (car.getVehicleId() == selected.getVehicleId()) { car.setAvailable(false); break; }
+                }
+                System.out.println("\n>>> Booking confirmed for "
+                        + selected.getBrand() + " " + selected.getModel()
+                        + " (Plate: " + selected.getPlateNum() + ")!");
+                System.out.println("    Daily Rate: RM " + String.format("%.2f", selected.getDailyrate()) + " per day");
+                System.out.println("    Deposit required: RM "
+                        + String.format("%.2f", selected.getDeposit())
+                        + "  (fully refundable upon return)");
+                return;
+            } else if (confirm.equalsIgnoreCase("N")) {
+                System.out.println("Booking cancelled. Returning to main menu.");
+                return;
+            } else {
+                confirmAttempts++;
+                int remaining = MAX_ATTEMPTS - confirmAttempts;
+                if (remaining > 0)
+                    System.out.println("  !! Please enter Y or N only. (" + remaining + " attempt(s) left)");
+                else
+                    System.out.println("  !! Too many invalid attempts. Returning to main menu...");
+            }
+        }
+    }
+}
+
+class Car {
+    final int    vehicleId;
+    final String plateNum;
+    final String brand;
+    final String model;
+    final int    carYears;
+    final double dailyrate;
+    final char   transmission;
+    boolean      available;
+    final int    mileage;
+    final String category;
+    final double deposit;
+
+    public Car(int vehicleId, String plateNum, String brand, String model,
+               int carYears, double dailyrate, char transmission,
+               boolean available, int mileage, String category, double deposit) {
+        this.vehicleId    = vehicleId;
+        this.plateNum     = plateNum;
+        this.brand        = brand;
+        this.model        = model;
+        this.carYears     = carYears;
+        this.dailyrate    = dailyrate;
+        this.transmission = transmission;
+        this.available    = available;
+        this.mileage      = mileage;
+        this.category     = category;
+        this.deposit      = deposit;
+    }
+
+    public int     getVehicleId()    {
+        return vehicleId; 
+    }
+    public String  getPlateNum()     {
+        return plateNum; 
+    }
+    public String  getBrand()        { 
+        return brand; 
+    }
+    public String  getModel()        {
+        return model; 
+    }
+    public int     getCarYears()     { 
+        return carYears; 
+    }
+    public double  getDailyrate()    {
+        return dailyrate; 
+    }
+    public char    getTransmission() {
+        return transmission; 
+    }
+    public boolean isAvailable()     { 
+        return available;
+    }
+    public int     getMileage()      { 
+        return mileage;
+    }
+    public String  getCategory()     { 
+        return category; 
+    }
+    public double  getDeposit()      { 
+        return deposit; 
+    }
+    public void    setAvailable(boolean available) {
+        this.available = available; 
+    }
+}
