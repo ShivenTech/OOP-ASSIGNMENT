@@ -1,0 +1,197 @@
+package main;
+
+import car.Car;
+import customer.Customer;
+import rental.Rental;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.InputMismatchException;
+
+public class Main {
+    
+    // Class-level variables
+    static ArrayList<Car> carList = new ArrayList<>();
+    static ArrayList<Customer> customerList = new ArrayList<>();
+    static ArrayList<Rental> rentalList = new ArrayList<>();
+    static Scanner scanner = new Scanner(System.in);
+
+    // ==========================================
+    // THE MAIN METHOD (Where the program actually runs)
+    // ==========================================
+    public static void main(String[] args) {
+        
+        // 1. Load fake data so the system isn't empty
+        // initializeDummyData();
+        
+        boolean running = true;
+        // 2. The Loop that keeps the menu open
+        while (running) {
+            System.out.println("\n=== CAR RENTAL MANAGEMENT SYSTEM ===");
+            System.out.println("1. Rent a Car");
+            System.out.println("2. Return a Car");
+            System.out.println("3. View All Rentals");
+            System.out.println("4. Exit System");
+            System.out.print("Please select an option (1-4): ");
+            
+            try {
+                int choice = scanner.nextInt();
+                switch (choice) {
+                    case 1:
+                        rentCar(); // This calls your rent method!
+                        break;
+                    case 2:
+                        returnCar(); // This calls your return method!
+                        break;
+                    case 3:
+                        viewAllRentals(); // This calls your view method!
+                        break;
+                    case 4:
+                        System.out.println("Exiting the system. Goodbye!");
+                        running = false; // This stops the loop
+                        break;
+                    default:
+                        System.out.println("Invalid option. Please choose between 1 and 4.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Error: Please enter a number, not text.");
+                scanner.nextLine(); 
+            }
+        }
+    }
+
+    // ==========================================
+    // RENTAL MODULE: CREATE (Rent a Car)
+    // ==========================================
+    public static void rentCar() {
+        System.out.println("\n--- RENT A CAR ---");
+        try {
+            System.out.print("Enter Customer ID: ");
+            String custId = scanner.next();
+            Customer selectedCustomer = null;
+
+            for (Customer c : customerList) {
+                if (c.getCustomerId().equals(custId)) {
+                    selectedCustomer = c;
+                    break;
+                }
+            }
+
+            if (selectedCustomer == null) {
+                System.out.println("Error: Customer not found. Please register the customer first.");
+                return; 
+            }
+
+            System.out.print("Enter Car Plate Number: ");
+            String plate = scanner.next();
+            Car selectedCar = null;
+
+            for (Car car : carList) {
+                if (car.getPlateNumber().equalsIgnoreCase(plate)) {
+                    selectedCar = car;
+                    break;
+                }
+            }
+
+            if (selectedCar == null) {
+                System.out.println("Error: Car not found in the system.");
+                return;
+            }
+
+            if (!selectedCar.isAvailable()) {
+                System.out.println("Sorry, the car " + selectedCar.getPlateNumber() + " is currently rented out.");
+                return;
+            }
+
+            System.out.print("Enter number of days to rent: ");
+            int days = scanner.nextInt(); 
+
+            if (days <= 0) {
+                System.out.println("Error: Rental days must be at least 1.");
+                return;
+            }
+
+            String newRentalId = "R" + (rentalList.size() + 1001); 
+            Rental newRental = new Rental(newRentalId, selectedCar, selectedCustomer, days);
+
+            rentalList.add(newRental);
+            selectedCar.setAvailable(false); 
+
+            System.out.println("\nSUCCESS: Car successfully rented!");
+            newRental.printReceipt();
+
+        } catch (InputMismatchException e) {
+            System.out.println("Error: Invalid input. Please enter valid numbers where required.");
+            scanner.nextLine(); 
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    // ==========================================
+    // RENTAL MODULE: UPDATE/DELETE (Return a Car)
+    // ==========================================
+    public static void returnCar() {
+        System.out.println("\n--- RETURN A CAR ---");
+        System.out.print("Enter Rental ID (e.g., R1001): ");
+        String rentId = scanner.next();
+
+        Rental rentalToReturn = null;
+        for (Rental r : rentalList) {
+            if (r.getRentalId().equalsIgnoreCase(rentId)) {
+                rentalToReturn = r;
+                break;
+            }
+        }
+
+        if (rentalToReturn == null) {
+            System.out.println("Error: Rental ID not found.");
+            return;
+        }
+
+        if (!rentalToReturn.isActive()) {
+            System.out.println("Notice: This rental has already been completed and returned.");
+            return;
+        }
+
+        rentalToReturn.returnCar(); 
+        rentalToReturn.getRentedCar().setAvailable(true); 
+
+        System.out.println("SUCCESS: Car " + rentalToReturn.getRentedCar().getPlateNumber() + " has been returned.");
+        System.out.println("The vehicle is now available for rent again.");
+    }
+
+    // ==========================================
+    // RENTAL MODULE: READ (View All Rentals)
+    // ==========================================
+    public static void viewAllRentals() {
+        System.out.println("\n--- ALL RENTAL TRANSACTIONS ---");
+        if (rentalList.isEmpty()) {
+            System.out.println("No rentals found in the system.");
+            return;
+        }
+
+        System.out.printf("%-10s %-15s %-15s %-10s %-10s %-10s\n", 
+                          "Rental ID", "Customer IC", "Car Plate", "Days", "Total(RM)", "Status");
+        System.out.println("-------------------------------------------------------------------------");
+        
+        for (Rental r : rentalList) {
+            String status = r.isActive() ? "Active" : "Returned";
+            System.out.printf("%-10s %-15s %-15s %-10d %-10.2f %-10s\n", 
+                              r.getRentalId(), r.getRenter().getCustomerId(), 
+                              r.getRentedCar().getPlateNumber(), r.getRentalDays(), 
+                              r.getTotalCost(), status);
+        }
+    }
+
+    // ==========================================
+    // TEMPORARY DUMMY DATA FOR TESTING
+    // ==========================================
+    // Change the dummy customer to match the new constructor (ID, Name, License, Phone, Email)
+    /*    public static void initializeDummyData() {
+            carList.add(new Car("VHA1234", "Perodua Myvi", 120.0));
+            carList.add(new Car("BCC5678", "Honda City", 150.0));
+            // Updated this line:
+            customerList.add(new Customer("C001", "Ali Bin Abu", "L987654", "0123456789", "ali@email.com"));
+        }
+    */
+}
