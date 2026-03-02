@@ -5,7 +5,6 @@ import customer.Customer;
 
 public class Rental {
     
-    // Private Attributes
     private String rentalId;
     private Car rentedCar;       
     private Customer renter;     
@@ -13,7 +12,6 @@ public class Rental {
     private double totalCost;
     private boolean isActive; 
 
-    // Constructor
     public Rental(String rentalId, Car rentedCar, Customer renter, int rentalDays) {
         this.rentalId = rentalId;
         this.rentedCar = rentedCar;
@@ -23,10 +21,9 @@ public class Rental {
         this.isActive = true; 
     }
 
-    // Business Logic
     private double calculateTotalCost() {
         if (rentedCar != null) {
-            return rentedCar.getRentalRatePerDay() * rentalDays;
+            return rentedCar.getDailyrate() * rentalDays; 
         }
         return 0.0;
     }
@@ -41,29 +38,23 @@ public class Rental {
         System.out.println("=====================================");
         System.out.println("Rental ID    : " + rentalId);
         System.out.println("Customer Name: " + renter.getName());
-        System.out.println("Customer IC  : " + renter.getCustomerId());
-        System.out.println("Car Details  : " + rentedCar.getBrandModel() + " (" + rentedCar.getPlateNumber() + ")");
+        System.out.println("Customer ID  : " + renter.getCustomerId());
+        System.out.println("Car Details  : " + rentedCar.getBrand() + " " + rentedCar.getModel() + " (" + rentedCar.getPlateNum() + ")");
         System.out.println("Rental Days  : " + rentalDays + " days");
         System.out.println("Total Cost   : RM " + String.format("%.2f", totalCost));
         System.out.println("Status       : " + (isActive ? "Active" : "Completed"));
         System.out.println("=====================================\n");
     }
 
-    // ==================
-    // TXT FILE FORMATTER 
-    // ==================
-    // This creates a comma-separated string that is easy to save to a .txt file
-    // Example output: R1001,VHA1234,010523011234,3,360.0,true
     public String toTextFileFormat() {
         return rentalId + "," + 
-               rentedCar.getPlateNumber() + "," + 
+               rentedCar.getPlateNum() + "," + 
                renter.getCustomerId() + "," + 
                rentalDays + "," + 
                totalCost + "," + 
                isActive;
     }
 
-    // Getters and Setters
     public String getRentalId() { return rentalId; }
     public void setRentalId(String rentalId) { this.rentalId = rentalId; }
     public Car getRentedCar() { return rentedCar; }
@@ -84,7 +75,5 @@ public class Rental {
     }
     public double getTotalCost() { return totalCost; }
     public boolean isActive() { return isActive; }
-    
-    // Setter for loading from file
     public void setActive(boolean active) { this.isActive = active; }
 }
