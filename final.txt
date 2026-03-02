@@ -9,48 +9,37 @@ import java.util.InputMismatchException;
 
 public class Main {
     
-    // Class-level variables
     static ArrayList<Car> carList = new ArrayList<>();
     static ArrayList<Customer> customerList = new ArrayList<>();
     static ArrayList<Rental> rentalList = new ArrayList<>();
     static Scanner scanner = new Scanner(System.in);
 
-    // ==========================================
-    // THE MAIN METHOD (Where the program actually runs)
-    // ==========================================
     public static void main(String[] args) {
         
-        // 1. Load fake data so the system isn't empty
-        // initializeDummyData();
+        initializeDummyData();
         
         boolean running = true;
-        // 2. The Loop that keeps the menu open
         while (running) {
             System.out.println("\n=== CAR RENTAL MANAGEMENT SYSTEM ===");
             System.out.println("1. Rent a Car");
             System.out.println("2. Return a Car");
             System.out.println("3. View All Rentals");
-            System.out.println("4. Exit System");
-            System.out.print("Please select an option (1-4): ");
+            System.out.println("4. View All Available Cars (Added from teammate's list)");
+            System.out.println("5. Exit System");
+            System.out.print("Please select an option (1-5): ");
             
             try {
                 int choice = scanner.nextInt();
                 switch (choice) {
-                    case 1:
-                        rentCar(); // This calls your rent method!
-                        break;
-                    case 2:
-                        returnCar(); // This calls your return method!
-                        break;
-                    case 3:
-                        viewAllRentals(); // This calls your view method!
-                        break;
-                    case 4:
+                    case 1: rentCar(); break;
+                    case 2: returnCar(); break;
+                    case 3: viewAllRentals(); break;
+                    case 4: viewAvailableCars(); break;
+                    case 5: 
                         System.out.println("Exiting the system. Goodbye!");
-                        running = false; // This stops the loop
+                        running = false; 
                         break;
-                    default:
-                        System.out.println("Invalid option. Please choose between 1 and 4.");
+                    default: System.out.println("Invalid option. Please choose between 1 and 5.");
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Error: Please enter a number, not text.");
@@ -59,9 +48,6 @@ public class Main {
         }
     }
 
-    // ==========================================
-    // RENTAL MODULE: CREATE (Rent a Car)
-    // ==========================================
     public static void rentCar() {
         System.out.println("\n--- RENT A CAR ---");
         try {
@@ -70,7 +56,7 @@ public class Main {
             Customer selectedCustomer = null;
 
             for (Customer c : customerList) {
-                if (c.getCustomerId().equals(custId)) {
+                if (c.getCustomerId().equalsIgnoreCase(custId)) {
                     selectedCustomer = c;
                     break;
                 }
@@ -81,12 +67,12 @@ public class Main {
                 return; 
             }
 
-            System.out.print("Enter Car Plate Number: ");
+            System.out.print("Enter Car Plate Number (e.g., ABC1233): ");
             String plate = scanner.next();
             Car selectedCar = null;
 
             for (Car car : carList) {
-                if (car.getPlateNumber().equalsIgnoreCase(plate)) {
+                if (car.getPlateNum().equalsIgnoreCase(plate)) {
                     selectedCar = car;
                     break;
                 }
@@ -98,7 +84,7 @@ public class Main {
             }
 
             if (!selectedCar.isAvailable()) {
-                System.out.println("Sorry, the car " + selectedCar.getPlateNumber() + " is currently rented out.");
+                System.out.println("Sorry, the car " + selectedCar.getPlateNum() + " is currently rented out.");
                 return;
             }
 
@@ -127,9 +113,6 @@ public class Main {
         }
     }
 
-    // ==========================================
-    // RENTAL MODULE: UPDATE/DELETE (Return a Car)
-    // ==========================================
     public static void returnCar() {
         System.out.println("\n--- RETURN A CAR ---");
         System.out.print("Enter Rental ID (e.g., R1001): ");
@@ -156,13 +139,10 @@ public class Main {
         rentalToReturn.returnCar(); 
         rentalToReturn.getRentedCar().setAvailable(true); 
 
-        System.out.println("SUCCESS: Car " + rentalToReturn.getRentedCar().getPlateNumber() + " has been returned.");
+        System.out.println("SUCCESS: Car " + rentalToReturn.getRentedCar().getPlateNum() + " has been returned.");
         System.out.println("The vehicle is now available for rent again.");
     }
 
-    // ==========================================
-    // RENTAL MODULE: READ (View All Rentals)
-    // ==========================================
     public static void viewAllRentals() {
         System.out.println("\n--- ALL RENTAL TRANSACTIONS ---");
         if (rentalList.isEmpty()) {
@@ -171,27 +151,42 @@ public class Main {
         }
 
         System.out.printf("%-10s %-15s %-15s %-10s %-10s %-10s\n", 
-                          "Rental ID", "Customer IC", "Car Plate", "Days", "Total(RM)", "Status");
+                          "Rental ID", "Customer ID", "Car Plate", "Days", "Total(RM)", "Status");
         System.out.println("-------------------------------------------------------------------------");
         
         for (Rental r : rentalList) {
             String status = r.isActive() ? "Active" : "Returned";
             System.out.printf("%-10s %-15s %-15s %-10d %-10.2f %-10s\n", 
                               r.getRentalId(), r.getRenter().getCustomerId(), 
-                              r.getRentedCar().getPlateNumber(), r.getRentalDays(), 
+                              r.getRentedCar().getPlateNum(), r.getRentalDays(), 
                               r.getTotalCost(), status);
         }
     }
-
-    // ==========================================
-    // TEMPORARY DUMMY DATA FOR TESTING
-    // ==========================================
-    // Change the dummy customer to match the new constructor (ID, Name, License, Phone, Email)
-    /*    public static void initializeDummyData() {
-            carList.add(new Car("VHA1234", "Perodua Myvi", 120.0));
-            carList.add(new Car("BCC5678", "Honda City", 150.0));
-            // Updated this line:
-            customerList.add(new Customer("C001", "Ali Bin Abu", "L987654", "0123456789", "ali@email.com"));
+    
+    // Quick method to display the cars so you can see your teammate's list
+    public static void viewAvailableCars() {
+        System.out.println("\n--- AVAILABLE CARS ---");
+        System.out.printf("%-10s %-12s %-15s %-10s\n", "Plate", "Brand", "Model", "Rate/Day");
+        System.out.println("---------------------------------------------------");
+        for (Car car : carList) {
+            if (car.isAvailable()) {
+                System.out.printf("%-10s %-12s %-15s RM%-10.2f\n", 
+                        car.getPlateNum(), car.getBrand(), car.getModel(), car.getDailyrate());
+            }
         }
-    */
+    }
+
+    public static void initializeDummyData() {
+        // Friend 2's Car Data
+        carList.add(new Car(101, "ABC1233", "Toyota", "Vios", 2023, 45.0, 'A', true, 5000, "Economy", 200.0));
+        carList.add(new Car(102, "DEF4561", "Honda", "City", 2023, 48.0, 'A', true, 6000, "Economy", 200.0));
+        carList.add(new Car(201, "MNO3453", "Toyota", "Fortuner", 2024, 120.0, 'A', true, 2000, "SUV", 500.0));
+        carList.add(new Car(301, "YZA5637", "Mercedes", "C-Class", 2024, 200.0, 'A', true, 1000, "Luxury", 1000.0));
+        
+        // Friend 1's Customer Data
+        customerList.add(new Customer("C001", "Ali Bin Abu", "L987654", "0123456789", "ali@email.com"));
+        customerList.add(new Customer("C002", "Siti Nurhaliza", "L112233", "0198765432", "siti@email.com"));
+        
+        System.out.println("System initialized with dummy data from all teammates!");
+    }
 }
