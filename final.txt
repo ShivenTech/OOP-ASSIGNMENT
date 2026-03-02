@@ -24,7 +24,7 @@ public class Main {
             System.out.println("1. Rent a Car");
             System.out.println("2. Return a Car");
             System.out.println("3. View All Rentals");
-            System.out.println("4. View All Available Cars (Added from teammate's list)");
+            System.out.println("4. View All Available Cars");
             System.out.println("5. Exit System");
             System.out.print("Please select an option (1-5): ");
             
@@ -190,3 +190,4 @@ public class Main {
         System.out.println("System initialized with dummy data from all teammates!");
     }
 }
+
