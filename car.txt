@@ -6,7 +6,7 @@ public abstract class CAR {
 
     static final int MAX_ATTEMPTS = 5;
     static final int GIVE_UP = Integer.MIN_VALUE;
-    static final String STAFF_PASSWORD = "staff123";  // ← change this to your password
+    static String STAFF_PASSWORD = "staff123";  // ← change this to your password
 
     public static int readIntInRange(Scanner sc, String prompt, int min, int max) {
         int attempts = 0;
