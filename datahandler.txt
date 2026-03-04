@@ -1,1 +1,147 @@
-datahandler
+package dataHandler;
+
+import car.Car;
+import customer.Customer;
+import rental.Rental;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+
+public class DataHandler {
+
+    // ==========================================
+    // 1. THE "SAVE GAME" METHODS
+    // ==========================================
+    public static void saveAllData(ArrayList<Car> cars, ArrayList<Customer> customers, ArrayList<Rental> rentals) {
+        saveCars(cars);
+        saveCustomers(customers);
+        saveRentals(rentals);
+        System.out.println("System data successfully saved to text files.");
+    }
+
+    private static void saveCars(ArrayList<Car> cars) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("cars.txt"))) {
+            for (Car c : cars) {
+                // Formatting the car attributes separated by commas
+                writer.write(c.getVehicleId() + "," + c.getPlateNum() + "," + c.getBrand() + "," + 
+                             c.getModel() + "," + c.getCarYears() + "," + c.getDailyrate() + "," + 
+                             c.getTransmission() + "," + c.isAvailable() + "," + c.getMileage() + "," + 
+                             c.getCategory() + "," + c.getDeposit());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving cars: " + e.getMessage());
+        }
+    }
+
+    private static void saveCustomers(ArrayList<Customer> customers) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("customers.txt"))) {
+            for (Customer c : customers) {
+                writer.write(c.getCustomerId() + "," + c.getName() + "," + c.getDrivingLicense() + "," + 
+                             c.getContactNumber() + "," + c.getEmail());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving customers: " + e.getMessage());
+        }
+    }
+
+    private static void saveRentals(ArrayList<Rental> rentals) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("rentals.txt"))) {
+            for (Rental r : rentals) {
+                // Calling the method you built earlier inside Rental.java!
+                writer.write(r.toTextFileFormat());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving rentals: " + e.getMessage());
+        }
+    }
+
+    // ==========================================
+    // 2. THE "LOAD GAME" METHODS
+    // ==========================================
+    public static void loadAllData(ArrayList<Car> cars, ArrayList<Customer> customers, ArrayList<Rental> rentals) {
+        loadCars(cars);
+        loadCustomers(customers);
+        
+        // Rentals MUST be loaded last because they need to link to the loaded cars and customers!
+        loadRentals(rentals, cars, customers); 
+    }
+
+    private static void loadCars(ArrayList<Car> cars) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("cars.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(","); // Chops the sentence into an array at every comma
+                if (parts.length == 11) {
+                    // Rebuilding the Car object from the text pieces
+                    Car loadedCar = new Car(
+                        Integer.parseInt(parts[0]), parts[1], parts[2], parts[3], 
+                        Integer.parseInt(parts[4]), Double.parseDouble(parts[5]), 
+                        parts[6].charAt(0), Boolean.parseBoolean(parts[7]), 
+                        Integer.parseInt(parts[8]), parts[9], Double.parseDouble(parts[10])
+                    );
+                    cars.add(loadedCar);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("No existing car data found. Starting fresh.");
+        }
+    }
+
+    private static void loadCustomers(ArrayList<Customer> customers) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("customers.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 5) {
+                    Customer loadedCustomer = new Customer(parts[0], parts[1], parts[2], parts[3], parts[4]);
+                    customers.add(loadedCustomer);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("No existing customer data found. Starting fresh.");
+        }
+    }
+
+    private static void loadRentals(ArrayList<Rental> rentals, ArrayList<Car> cars, ArrayList<Customer> customers) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("rentals.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 6) {
+                    String rentalId = parts[0];
+                    String plateNum = parts[1];
+                    String custId = parts[2];
+                    int days = Integer.parseInt(parts[3]);
+                    boolean isActive = Boolean.parseBoolean(parts[5]);
+
+                    // LINKING: Finding the actual Car and Customer objects that match the text IDs
+                    Car linkedCar = null;
+                    for (Car c : cars) {
+                        if (c.getPlateNum().equals(plateNum)) { linkedCar = c; break; }
+                    }
+
+                    Customer linkedCust = null;
+                    for (Customer c : customers) {
+                        if (c.getCustomerId().equals(custId)) { linkedCust = c; break; }
+                    }
+
+                    // If both the car and customer still exist in the system, recreate the rental
+                    if (linkedCar != null && linkedCust != null) {
+                        Rental loadedRental = new Rental(rentalId, linkedCar, linkedCust, days);
+                        loadedRental.setActive(isActive); // Restore its active/returned status
+                        rentals.add(loadedRental);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("No existing rental data found. Starting fresh.");
+        }
+    }
+}
