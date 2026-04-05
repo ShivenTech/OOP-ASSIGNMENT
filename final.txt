@@ -14,14 +14,21 @@ public class Main {
     static ArrayList<Customer> customerList = new ArrayList<>();
     static ArrayList<Rental> rentalList = new ArrayList<>();
     static Scanner scanner = new Scanner(System.in);
+    static JsonDataHandler dataHandler = new JsonDataHandler();
+    static String customerFile = "customers.json";
 
     // ==========================================
     // THE MAIN METHOD (Where the program actually runs)
     // ==========================================
 
    public static void main(String[] args) {
-        // 1. Uncomment this so you actually have cars to rent!
-        initializeDummyData();
+        try {
+            customerList = (ArrayList<Customer>) dataHandler.load(customerFile);
+            System.out.println("System: Previous customer data loaded successfully.");
+        } catch (Exception e) {
+            System.out.println("System: No previous data found. Starting fresh.");
+        }
+         initializeDummyData();
         
         boolean running = true;
         while (running) {
@@ -86,6 +93,14 @@ public class Main {
         
         // Add to the local list for this session
         customerList.add(newCust);
+
+        // Check if the file saved successfully or not
+        try {
+            dataHandler.save(customerList, customerFile);
+            System.out.println("Data saved to JSON file successfully!");
+        } catch (IOException e) {
+            System.out.println("Error saving to file: " + e.getMessage());
+        }
         
         // Use the method from your Customer class to save to file
         newCust.saveToFile();
