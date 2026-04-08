@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.InputMismatchException;
 
+
 public class Main {
     
     // Class-level variables
@@ -14,6 +15,8 @@ public class Main {
     static ArrayList<Customer> customerList = new ArrayList<>();
     static ArrayList<Rental> rentalList = new ArrayList<>();
     static Scanner scanner = new Scanner(System.in);
+    static JsonDataHandler dataHandler = new JsonDataHandler();
+    static String customerFile = "customers.json";
 
     // ==========================================
     // THE MAIN METHOD (Where the program actually runs)
@@ -21,6 +24,12 @@ public class Main {
 
    public static void main(String[] args) {
         // 1. Uncomment this so you actually have cars to rent!
+        try {
+        // Load existing customers from the file
+            customerList = (ArrayList<Customer>) dataHandler.load(customerFile);
+        } catch (IOException e) {
+            System.out.println("Starting with fresh customer list.");
+        }
         initializeDummyData();
         
         boolean running = true;
@@ -86,6 +95,14 @@ public class Main {
         
         // Add to the local list for this session
         customerList.add(newCust);
+
+        // check if the file saved or not
+        try {
+            dataHandler.save(customerList, customerFile);
+            System.out.println("Data saved to JSON file successfully!");
+        } catch (IOException e) {
+            System.out.println("Error saving to file: " + e.getMessage());
+        }
         
         // Use the method from your Customer class to save to file
         newCust.saveToFile();
