@@ -1,147 +1,97 @@
 package dataHandler;
 
-import car.Car;
-import customer.Customer;
-import rental.Rental;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
+import customer.Customer; 
+import car.Car;          
+public abstract class DataHandler {
+    protected String fileName;
 
-public class DataHandler {
-
-    // ==========================================
-    // 1. THE "SAVE GAME" METHODS
-    // ==========================================
-    public static void saveAllData(ArrayList<Car> cars, ArrayList<Customer> customers, ArrayList<Rental> rentals) {
-        saveCars(cars);
-        saveCustomers(customers);
-        saveRentals(rentals);
-        System.out.println("System data successfully saved to text files.");
+    public DataHandler(String fileName) {
+        this.fileName = fileName;
     }
 
-    private static void saveCars(ArrayList<Car> cars) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("cars.txt"))) {
-            for (Car c : cars) {
-                // Formatting the car attributes separated by commas
-                writer.write(c.getVehicleId() + "," + c.getPlateNum() + "," + c.getBrand() + "," + 
-                             c.getModel() + "," + c.getCarYears() + "," + c.getDailyrate() + "," + 
-                             c.getTransmission() + "," + c.isAvailable() + "," + c.getMileage() + "," + 
-                             c.getCategory() + "," + c.getDeposit());
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Error saving cars: " + e.getMessage());
+    // Abstract methods to be implemented by the Json handler
+    public abstract void saveCustomers(List<Customer> data, String path) throws IOException;
+    public abstract List<Customer> loadCustomers(String path) throws IOException;
+}
+
+class CarJsonHandler extends DataHandler {
+
+    public CarJsonHandler(String fileName) {
+        super(fileName);
+    }
+
+    // Chapter 2: Using throws for Exception Handling
+    public void saveCustomers(List<Customer> customers, String path) throws IOException {
+        PrintWriter writer = new PrintWriter(new FileWriter(path));
+        writer.println("[");
+        for (int i = 0; i < customers.size(); i++) {
+            Customer c = customers.get(i);
+            writer.println("  {");
+            // Chapter 5: String processing to build JSON
+            // Syncing with Customer.java getters
+            writer.println("    \"id\": \"" + c.getCustomerId() + "\",");
+            writer.println("    \"name\": \"" + c.getName() + "\",");
+            writer.println("    \"license\": \"" + c.getDrivingLicense() + "\",");
+            writer.println("    \"contact\": \"" + c.getContactNumber() + "\",");
+            writer.println("    \"email\": \"" + c.getEmail() + "\"");
+            writer.print("  }");
+            if (i < customers.size() - 1) writer.print(",");
+            writer.println();
         }
+        writer.println("]");
+        writer.close();
     }
 
-    private static void saveCustomers(ArrayList<Customer> customers) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("customers.txt"))) {
-            for (Customer c : customers) {
-                writer.write(c.getCustomerId() + "," + c.getName() + "," + c.getDrivingLicense() + "," + 
-                             c.getContactNumber() + "," + c.getEmail());
-                writer.newLine();
+    public List<Customer> loadCustomers(String path) throws IOException {
+        List<Customer> list = new ArrayList<>();
+        File file = new File(path);
+        if (!file.exists()) return list;
+
+        BufferedReader reader = new BufferedReader(new FileReader(path));
+        String line;
+        String id = "", name = "", license = "", contact = "", email = "";
+
+        while ((line = reader.readLine()) != null) {
+            line = line.trim();
+            // Chapter 5: Parsing JSON strings
+            if (line.contains("\"id\":")) id = parseValue(line);
+            else if (line.contains("\"name\":")) name = parseValue(line);
+            else if (line.contains("\"license\":")) license = parseValue(line);
+            else if (line.contains("\"contact\":")) contact = parseValue(line);
+            else if (line.contains("\"email\":")) email = parseValue(line);
+            else if (line.startsWith("}") || line.startsWith("},")) {
+                // Chapter 4: Object construction
+                // Syncing with Customer constructor
+                list.add(new Customer(id, name, license, contact, email));
             }
-        } catch (IOException e) {
-            System.out.println("Error saving customers: " + e.getMessage());
         }
+        reader.close();
+        return list;
     }
 
-    private static void saveRentals(ArrayList<Rental> rentals) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("rentals.txt"))) {
-            for (Rental r : rentals) {
-                // Calling the method you built earlier inside Rental.java!
-                writer.write(r.toTextFileFormat());
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Error saving rentals: " + e.getMessage());
+    // Method to save CAR data, syncing with CAR.java getters
+    public void saveCars(List<Car> cars) throws IOException {
+        PrintWriter writer = new PrintWriter(new FileWriter(fileName));
+        writer.println("[");
+        for (int i = 0; i < cars.size(); i++) {
+            Car c = cars.get(i);
+            writer.println("  {");
+            writer.println("    \"plate\": \"" + c.getPlateNum() + "\",");
+            writer.println("    \"model\": \"" + c.getModel() + "\",");
+            writer.println("    \"rate\": " + c.getDailyrate() + ",");
+            writer.println("    \"isAvailable\": " + c.isAvailable());
+            writer.print("  }");
+            if (i < cars.size() - 1) writer.print(",");
+            writer.println();
         }
+        writer.println("]");
+        writer.close();
     }
 
-    // ==========================================
-    // 2. THE "LOAD GAME" METHODS
-    // ==========================================
-    public static void loadAllData(ArrayList<Car> cars, ArrayList<Customer> customers, ArrayList<Rental> rentals) {
-        loadCars(cars);
-        loadCustomers(customers);
-        
-        // Rentals MUST be loaded last because they need to link to the loaded cars and customers!
-        loadRentals(rentals, cars, customers); 
-    }
-
-    private static void loadCars(ArrayList<Car> cars) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("cars.txt"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(","); // Chops the sentence into an array at every comma
-                if (parts.length == 11) {
-                    // Rebuilding the Car object from the text pieces
-                    Car loadedCar = new Car(
-                        Integer.parseInt(parts[0]), parts[1], parts[2], parts[3], 
-                        Integer.parseInt(parts[4]), Double.parseDouble(parts[5]), 
-                        parts[6].charAt(0), Boolean.parseBoolean(parts[7]), 
-                        Integer.parseInt(parts[8]), parts[9], Double.parseDouble(parts[10])
-                    );
-                    cars.add(loadedCar);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("No existing car data found. Starting fresh.");
-        }
-    }
-
-    private static void loadCustomers(ArrayList<Customer> customers) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("customers.txt"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 5) {
-                    Customer loadedCustomer = new Customer(parts[0], parts[1], parts[2], parts[3], parts[4]);
-                    customers.add(loadedCustomer);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("No existing customer data found. Starting fresh.");
-        }
-    }
-
-    private static void loadRentals(ArrayList<Rental> rentals, ArrayList<Car> cars, ArrayList<Customer> customers) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("rentals.txt"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 6) {
-                    String rentalId = parts[0];
-                    String plateNum = parts[1];
-                    String custId = parts[2];
-                    int days = Integer.parseInt(parts[3]);
-                    boolean isActive = Boolean.parseBoolean(parts[5]);
-
-                    // LINKING: Finding the actual Car and Customer objects that match the text IDs
-                    Car linkedCar = null;
-                    for (Car c : cars) {
-                        if (c.getPlateNum().equals(plateNum)) { linkedCar = c; break; }
-                    }
-
-                    Customer linkedCust = null;
-                    for (Customer c : customers) {
-                        if (c.getCustomerId().equals(custId)) { linkedCust = c; break; }
-                    }
-
-                    // If both the car and customer still exist in the system, recreate the rental
-                    if (linkedCar != null && linkedCust != null) {
-                        Rental loadedRental = new Rental(rentalId, linkedCar, linkedCust, days);
-                        loadedRental.setActive(isActive); // Restore its active/returned status
-                        rentals.add(loadedRental);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("No existing rental data found. Starting fresh.");
-        }
+    private String parseValue(String line) {
+        return line.split(":")[1].replace("\"", "").replace(",", "").trim();
     }
 }
