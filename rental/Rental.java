@@ -1,5 +1,7 @@
 package rental;
 
+import car;
+import customer;
 import car.Car;
 import customer.Customer;
 
