@@ -1,7 +1,4 @@
 package customer;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class Customer {
     // Attributes based on the system description
@@ -20,19 +17,7 @@ public class Customer {
         this.email = email;
     }
 
-    // Method to save customer details to a text file
-    public void saveToFile() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("customers.txt", true))) {
-            // Saving data in a comma-separated format for easy reading later
-            writer.write(customerId + "," + name + "," + drivingLicense + "," + contactNumber + "," + email);
-            writer.newLine();
-            System.out.println("Customer registration successful. Data saved to file.");
-        } catch (IOException e) {
-            System.out.println("An error occurred while saving customer data: " + e.getMessage());
-        }
-    }
-
-    // Getters and Setters (Useful for the 'Rental' or 'Data Handler' classes later)
+    // Getters and Setters
     public String getCustomerId() { return customerId; }
     public void setCustomerId(String customerId) { this.customerId = customerId; }
 
@@ -48,14 +33,8 @@ public class Customer {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-//helloheloehlojhijkjkj
     @Override
     public String toString() {
         return "Customer ID: " + customerId + " | Name: " + name + " | License: " + drivingLicense;
     }
-
 }
-
-
-
-System.out.println("Hello world");
