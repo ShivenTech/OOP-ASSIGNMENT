@@ -1,21 +1,20 @@
 package car;
 
-public class Car {
-    private final int    vehicleId;
-    private final String plateNum;
-    private final String brand;
-    private final String model;
-    private final int    carYears;
-    private final double dailyrate;
-    private final char   transmission;
-    private boolean      available;
-    private final int    mileage;
-    private final String category;
-    private final double deposit;
+// 1. THE ABSTRACT SUPERCLASS
+public abstract class Car {
+    private int vehicleId;
+    private String plateNum;
+    private String brand;
+    private String model;
+    private int carYears;
+    private double dailyrate;
+    private char transmission;
+    private boolean available;
+    private int mileage;
 
     public Car(int vehicleId, String plateNum, String brand, String model,
                int carYears, double dailyrate, char transmission,
-               boolean available, int mileage, String category, double deposit) {
+               boolean available, int mileage) {
         this.vehicleId    = vehicleId;
         this.plateNum     = plateNum;
         this.brand        = brand;
@@ -25,21 +24,21 @@ public class Car {
         this.transmission = transmission;
         this.available    = available;
         this.mileage      = mileage;
-        this.category     = category;
-        this.deposit      = deposit;
     }
 
-    public int     getVehicleId()    { return vehicleId; }
-    public String  getPlateNum()     { return plateNum; }
-    public String  getBrand()        { return brand; }
-    public String  getModel()        { return model; }
-    public int     getCarYears()     { return carYears; }
-    public double  getDailyrate()    { return dailyrate; }
-    public char    getTransmission() { return transmission; }
-    public boolean isAvailable()     { return available; }
-    public int     getMileage()      { return mileage; }
-    public String  getCategory()     { return category; }
-    public double  getDeposit()      { return deposit; }
-    
-    public void    setAvailable(boolean available) { this.available = available; }
+    // 2. POLYMORPHISM: Required methods for all vehicle types
+    public abstract String getCategory();
+    public abstract double getDeposit();
+
+    // Standard Getters and Setters
+    public int getVehicleId() { return vehicleId; }
+    public String getPlateNum() { return plateNum; }
+    public String getBrand() { return brand; }
+    public String getModel() { return model; }
+    public int getCarYears() { return carYears; }
+    public double getDailyrate() { return dailyrate; }
+    public char getTransmission() { return transmission; }
+    public boolean isAvailable() { return available; }
+    public void setAvailable(boolean available) { this.available = available; }
+    public int getMileage() { return mileage; }
 }
