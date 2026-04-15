@@ -24,10 +24,10 @@ public class Main {
         
         System.out.println("Booting up Car Rental System...");
         
-        // 2. LOAD DATA: Try to load existing data from the text files first
+        // 2. LOAD DATA: Load JSON data via the new DataHandler
         DataHandler.loadAllData(carList, customerList, rentalList);
         
-        // 3. FALLBACK: If the files were totally empty, load the dummy data so the system isn't blank
+        // 3. FALLBACK: If the files were totally empty, load dummy data
         if (carList.isEmpty() && customerList.isEmpty()) {
             initializeDummyData();
         }
@@ -46,30 +46,18 @@ public class Main {
             
             try {
                 int choice = scanner.nextInt();
-                scanner.nextLine(); // Clear the scanner buffer
+                scanner.nextLine(); // CLEAR BUFFER: Catches the 'Enter' key
 
                 switch (choice) {
-                    case 1: 
-                        rentCar(); 
-                        break;
-                    case 2: 
-                        returnCar(); 
-                        break;
-                    case 3: 
-                        viewAllRentals(); 
-                        break;
-                    case 4: 
-                        viewAvailableCars(); 
-                        break;
-                    case 5:
-                        addNewCar();
-                        break;
-                    case 6:
-                        addNewCustomer();
-                        break;
+                    case 1: rentCar(); break;
+                    case 2: returnCar(); break;
+                    case 3: viewAllRentals(); break;
+                    case 4: viewAvailableCars(); break;
+                    case 5: addNewCar(); break;
+                    case 6: addNewCustomer(); break;
                     case 7: 
                         System.out.println("\nInitiating shutdown sequence...");
-                        // 4. SAVE DATA: Save everything back to the text files right before closing
+                        // 4. SAVE DATA: Save to JSON right before closing
                         DataHandler.saveAllData(carList, customerList, rentalList);
                         System.out.println("Exiting the system. Goodbye!");
                         running = false; 
@@ -78,8 +66,8 @@ public class Main {
                         System.out.println("Invalid option. Please choose between 1 and 7.");
                 }
             } catch (InputMismatchException e) {
-                System.out.println("Error: Please enter a number, not text.");
-                scanner.nextLine(); // Clears the bad input to prevent an infinite loop
+                System.out.println("Error: Please enter a valid number.");
+                scanner.nextLine(); // Clear the bad input
             }
         }
     }
@@ -129,19 +117,18 @@ public class Main {
 
             System.out.print("Enter number of days to rent: ");
             int days = scanner.nextInt(); 
-            scanner.nextLine(); // Clear buffer
+            scanner.nextLine(); // CLEAR BUFFER
 
             if (days <= 0) {
                 System.out.println("Error: Rental days must be at least 1.");
                 return;
             }
 
-            // Generate a unique Rental ID
             String newRentalId = "R" + (rentalList.size() + 1001); 
             Rental newRental = new Rental(newRentalId, selectedCar, selectedCustomer, days);
 
             rentalList.add(newRental);
-            selectedCar.setAvailable(false); // Update the car's status to unavailable
+            selectedCar.setAvailable(false); 
 
             System.out.println("\nSUCCESS: Car successfully rented!");
             newRental.printReceipt();
@@ -180,12 +167,10 @@ public class Main {
             return;
         }
 
-        // Update object states to complete the return
         rentalToReturn.returnCar(); 
         rentalToReturn.getRentedCar().setAvailable(true); 
 
         System.out.println("SUCCESS: Car " + rentalToReturn.getRentedCar().getPlateNum() + " has been returned.");
-        System.out.println("The vehicle is now available for rent again.");
     }
 
     // ==========================================
@@ -210,7 +195,7 @@ public class Main {
 
         try {
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Clear the scanner buffer
+            scanner.nextLine(); // CLEAR BUFFER
 
             switch (choice) {
                 case 0:
@@ -301,7 +286,7 @@ public class Main {
 
         try {
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Clear the scanner buffer
+            scanner.nextLine(); // CLEAR BUFFER
 
             switch (choice) {
                 case 1:
@@ -329,7 +314,7 @@ public class Main {
                     
                     System.out.print("Enter your choice (0-" + brands.size() + "): ");
                     int brandChoice = scanner.nextInt();
-                    scanner.nextLine();
+                    scanner.nextLine(); // CLEAR BUFFER
                     
                     if (brandChoice == 0) {
                         System.out.println("Returning to menu...");
@@ -363,7 +348,7 @@ public class Main {
                     
                     System.out.print("Enter your choice (0-" + categories.size() + "): ");
                     int catChoice = scanner.nextInt();
-                    scanner.nextLine();
+                    scanner.nextLine(); // CLEAR BUFFER
                     
                     if (catChoice == 0) {
                         System.out.println("Returning to menu...");
@@ -435,7 +420,6 @@ public class Main {
             System.out.print("Enter Plate Number (e.g., VHA1234): ");
             String plate = scanner.nextLine();
             
-            // Check if car already exists
             for (Car c : carList) {
                 if (c.getPlateNum().equalsIgnoreCase(plate)) {
                     System.out.println("Error: A car with this plate number already exists.");
@@ -447,23 +431,29 @@ public class Main {
             String brand = scanner.nextLine();
             System.out.print("Enter Model (e.g., Vios): ");
             String model = scanner.nextLine();
+            
             System.out.print("Enter Manufacturing Year: ");
             int year = scanner.nextInt();
+            scanner.nextLine(); // CLEAR BUFFER
+            
             System.out.print("Enter Daily Rental Rate (RM): ");
             double rate = scanner.nextDouble();
-            scanner.nextLine(); // Clear buffer
+            scanner.nextLine(); // CLEAR BUFFER
+            
             System.out.print("Enter Transmission (A for Auto, M for Manual): ");
             char trans = scanner.nextLine().toUpperCase().charAt(0);
+            
             System.out.print("Enter Current Mileage (km): ");
             int mileage = scanner.nextInt();
-            scanner.nextLine(); // Clear buffer
+            scanner.nextLine(); // CLEAR BUFFER
+            
             System.out.print("Enter Category (Economy / SUV / Luxury): ");
             String category = scanner.nextLine();
+            
             System.out.print("Enter Required Deposit (RM): ");
             double deposit = scanner.nextDouble();
-            scanner.nextLine(); // Clear buffer
+            scanner.nextLine(); // CLEAR BUFFER
 
-            // Auto-generate Vehicle ID
             int newVehicleId = carList.size() + 1001; 
             
             Car newCar = new Car(newVehicleId, plate, brand, model, year, rate, trans, true, mileage, category, deposit);
@@ -489,7 +479,6 @@ public class Main {
             System.out.print("Enter Driving License Number: ");
             String license = scanner.nextLine();
             
-            // Basic validation to prevent duplicate licenses
             for (Customer c : customerList) {
                 if (c.getDrivingLicense().equalsIgnoreCase(license)) {
                     System.out.println("Error: This driving license is already registered.");
@@ -502,7 +491,6 @@ public class Main {
             System.out.print("Enter Email Address: ");
             String email = scanner.nextLine();
 
-            // Auto-generate Customer ID (e.g., C003)
             String newCustId = String.format("C%03d", customerList.size() + 1);
             
             Customer newCustomer = new Customer(newCustId, name, license, phone, email);
@@ -549,7 +537,6 @@ public class Main {
         carList.add(new Car(109, "SED5631", "Toyota",     "Altis",         2024, 58.0,  'A', true, 5600, "Economy", 200.0));
         carList.add(new Car(110, "WMN4498", "Nissan",     "Sentra",        2024, 58.0,  'A', true, 4000, "Economy", 200.0));
 
-        // SUV Cars
         carList.add(new Car(201, "MNO3453", "Toyota",     "Fortuner",      2024, 120.0, 'A', true, 2000, "SUV", 500.0));
         carList.add(new Car(202, "PQR6782", "Honda",      "CR-V",          2023, 120.0, 'A', true, 3500, "SUV", 500.0));
         carList.add(new Car(203, "STU9014", "Mitsubishi", "Montero",       2024, 125.0, 'A', true, 1500, "SUV", 500.0));
@@ -561,7 +548,6 @@ public class Main {
         carList.add(new Car(209, "BHY9803", "Mitsubishi", "Outlander",     2024, 155.0, 'A', true, 2000, "SUV", 500.0));
         carList.add(new Car(210, "VWX2347", "Ford",       "Edge",          2024, 145.0, 'A', true, 3200, "SUV", 500.0));
 
-        // Luxury Cars
         carList.add(new Car(301, "YZA5637", "Mercedes", "C-Class",  2024, 200.0, 'A', true, 1000, "Luxury", 1000.0));
         carList.add(new Car(302, "BCD8904", "BMW",      "3 Series", 2024, 210.0, 'A', true,  800, "Luxury", 1000.0));
         carList.add(new Car(303, "EFG1235", "Audi",     "A4",       2023, 210.0, 'A', true, 2500, "Luxury", 1000.0));
