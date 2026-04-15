@@ -1,0 +1,16 @@
+[
+  {
+    "customerId": "C001",
+    "name": "Ali Bin Abu",
+    "drivingLicense": "L987654",
+    "contactNumber": "0123456789",
+    "email": "ali@email.com"
+  },
+  {
+    "customerId": "C002",
+    "name": "Siti Nurhaliza",
+    "drivingLicense": "L112233",
+    "contactNumber": "0198765432",
+    "email": "siti@email.com"
+  }
+]

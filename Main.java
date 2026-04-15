@@ -24,10 +24,10 @@ public class Main {
         
         System.out.println("Booting up Car Rental System...");
         
-        // 2. LOAD DATA: Load JSON data via the new DataHandler
+        // 2. LOAD DATA: Try to load existing data from the text files first
         DataHandler.loadAllData(carList, customerList, rentalList);
         
-        // 3. FALLBACK: If the files were totally empty, load dummy data
+        // 3. FALLBACK: If the files were totally empty, load the dummy data so the system isn't blank
         if (carList.isEmpty() && customerList.isEmpty()) {
             initializeDummyData();
         }
@@ -41,8 +41,9 @@ public class Main {
             System.out.println("4. View All Available Cars");
             System.out.println("5. Add a New Car");
             System.out.println("6. Register a New Customer");
-            System.out.println("7. Exit System & Save Data");
-            System.out.print("Please select an option (1-7): ");
+            System.out.println("7. View All Registered Customers");
+            System.out.println("8. Exit System & Save Data");
+            System.out.print("Please select an option (1-8): ");
             
             try {
                 int choice = scanner.nextInt();
@@ -55,7 +56,8 @@ public class Main {
                     case 4: viewAvailableCars(); break;
                     case 5: addNewCar(); break;
                     case 6: addNewCustomer(); break;
-                    case 7: 
+                    case 7: viewAllCustomers(); break;
+                    case 8: 
                         System.out.println("\nInitiating shutdown sequence...");
                         // 4. SAVE DATA: Save to JSON right before closing
                         DataHandler.saveAllData(carList, customerList, rentalList);
@@ -63,7 +65,7 @@ public class Main {
                         running = false; 
                         break;
                     default: 
-                        System.out.println("Invalid option. Please choose between 1 and 7.");
+                        System.out.println("Invalid option. Please choose between 1 and 8.");
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Error: Please enter a valid number.");
@@ -124,11 +126,12 @@ public class Main {
                 return;
             }
 
+            // Generate a unique Rental ID
             String newRentalId = "R" + (rentalList.size() + 1001); 
             Rental newRental = new Rental(newRentalId, selectedCar, selectedCustomer, days);
 
             rentalList.add(newRental);
-            selectedCar.setAvailable(false); 
+            selectedCar.setAvailable(false); // Update the car's status to unavailable
 
             System.out.println("\nSUCCESS: Car successfully rented!");
             newRental.printReceipt();
@@ -167,6 +170,7 @@ public class Main {
             return;
         }
 
+        // Update object states to complete the return
         rentalToReturn.returnCar(); 
         rentalToReturn.getRentedCar().setAvailable(true); 
 
@@ -500,6 +504,31 @@ public class Main {
             
         } catch (Exception e) {
             System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    // ==========================================
+    // CUSTOMER MODULE: READ (View All Customers)
+    // ==========================================
+    public static void viewAllCustomers() {
+        System.out.println("\n--- ALL REGISTERED CUSTOMERS ---");
+        if (customerList.isEmpty()) {
+            System.out.println("No customers found in the system.");
+            return;
+        }
+
+        // Using System.out.printf to create a beautifully formatted table
+        System.out.printf("%-10s %-20s %-15s %-15s %-25s\n", 
+                          "Cust ID", "Name", "License No", "Phone", "Email");
+        System.out.println("-----------------------------------------------------------------------------------------");
+        
+        for (Customer c : customerList) {
+            System.out.printf("%-10s %-20s %-15s %-15s %-25s\n", 
+                              c.getCustomerId(), 
+                              c.getName(), 
+                              c.getDrivingLicense(), 
+                              c.getContactNumber(), 
+                              c.getEmail());
         }
     }
 
