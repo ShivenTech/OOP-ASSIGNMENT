@@ -1,11 +1,10 @@
 package dataHandler;
 
-import car.Car;
-import customer.Customer;
-import rental.Rental;
-
+import car.*;
+import customer.*;
 import java.io.*;
 import java.util.ArrayList;
+import rental.Rental;
 
 public class DataHandler {
 
@@ -56,7 +55,8 @@ public class DataHandler {
                 writer.println("    \"name\": \"" + c.getName() + "\",");
                 writer.println("    \"drivingLicense\": \"" + c.getDrivingLicense() + "\",");
                 writer.println("    \"contactNumber\": \"" + c.getContactNumber() + "\",");
-                writer.println("    \"email\": \"" + c.getEmail() + "\"");
+                writer.println("    \"email\": \"" + c.getEmail() + "\",");
+                writer.println("    \"tier\": \"" + c.getMembershipTier() + "\""); // Added Tier!
                 writer.print("  }");
                 if (i < customers.size() - 1) writer.println(",");
                 else writer.println();
@@ -97,7 +97,6 @@ public class DataHandler {
         loadRentals(rentals, cars, customers);
     }
 
-    // Tiny helper to strip out the JSON quotes and commas when reading
     private static String parseJsonString(String line) {
         try { return line.split(":")[1].replace("\"", "").replace(",", "").trim(); } 
         catch (Exception e) { return ""; }
@@ -115,7 +114,7 @@ public class DataHandler {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             int id = 0, year = 0, mileage = 0;
-            double rate = 0.0, deposit = 0.0;
+            double rate = 0.0;
             String plate = "", brand = "", model = "", category = "";
             char trans = 'A';
             boolean available = true;
@@ -131,10 +130,17 @@ public class DataHandler {
                 else if (line.contains("\"available\":")) available = Boolean.parseBoolean(parseJsonNumber(line));
                 else if (line.contains("\"mileage\":")) mileage = Integer.parseInt(parseJsonNumber(line));
                 else if (line.contains("\"category\":")) category = parseJsonString(line);
-                else if (line.contains("\"deposit\":")) deposit = Double.parseDouble(parseJsonNumber(line));
                 else if (line.contains("}")) {
                     if (!plate.isEmpty()) {
-                        cars.add(new Car(id, plate, brand, model, year, rate, trans, available, mileage, category, deposit));
+                        // Polymorphism: Instantiate the correct subclass based on category
+                        if (category.equals("SUV")) cars.add(new SUV(id, plate, brand, model, year, rate, trans, available, mileage));
+                        else if (category.equals("MPV")) cars.add(new MPV(id, plate, brand, model, year, rate, trans, available, mileage));
+                        else if (category.equals("Coupe")) cars.add(new Coupe(id, plate, brand, model, year, rate, trans, available, mileage));
+                        else if (category.equals("EV")) cars.add(new EV(id, plate, brand, model, year, rate, trans, available, mileage));
+                        else if (category.equals("Hybrid")) cars.add(new Hybrid(id, plate, brand, model, year, rate, trans, available, mileage));
+                        else if (category.equals("Sports Car")) cars.add(new SportsCar(id, plate, brand, model, year, rate, trans, available, mileage));
+                        else cars.add(new Sedan(id, plate, brand, model, year, rate, trans, available, mileage));
+                        
                         plate = ""; 
                     }
                 }
@@ -150,7 +156,7 @@ public class DataHandler {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
-            String id = "", name = "", license = "", phone = "", email = "";
+            String id = "", name = "", license = "", phone = "", email = "", tier = "";
 
             while ((line = reader.readLine()) != null) {
                 if (line.contains("\"customerId\":")) id = parseJsonString(line);
@@ -158,10 +164,18 @@ public class DataHandler {
                 else if (line.contains("\"drivingLicense\":")) license = parseJsonString(line);
                 else if (line.contains("\"contactNumber\":")) phone = parseJsonString(line);
                 else if (line.contains("\"email\":")) email = parseJsonString(line);
+                else if (line.contains("\"tier\":")) tier = parseJsonString(line);
                 else if (line.contains("}")) {
                     if (!id.isEmpty()) {
-                        customers.add(new Customer(id, name, license, phone, email));
-                        id = ""; 
+                        // Polymorphism: Instantiate the correct subclass based on Tier
+                        if (tier.equals("Gold")) {
+                            customers.add(new GoldCustomer(id, name, license, phone, email));
+                        } else if (tier.equals("Platinum")) {
+                            customers.add(new PlatinumCustomer(id, name, license, phone, email));
+                        } else {
+                            customers.add(new NormalCustomer(id, name, license, phone, email));
+                        }
+                        id = ""; tier = "";
                     }
                 }
             }

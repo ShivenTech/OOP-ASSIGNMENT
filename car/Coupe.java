@@ -1,6 +1,6 @@
 package car;
 
-class Coupe extends Car {
+public class Coupe extends Car {
     public Coupe(int id, String plate, String brand, String model, int year, double rate, char trans, boolean avail, int miles) {
         super(id, plate, brand, model, year, rate, trans, avail, miles);
     }

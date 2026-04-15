@@ -1,7 +1,7 @@
 import car.*;
 import customer.*;
-import rental.Rental;
 import dataHandler.DataHandler;
+import rental.Rental;
 
 import java.util.ArrayList;
 import java.util.Scanner;

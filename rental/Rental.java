@@ -21,9 +21,18 @@ public class Rental {
         this.isActive = true; 
     }
 
+    // ==========================================
+    // POLYMORPHISM IN ACTION
+    // ==========================================
     private double calculateTotalCost() {
-        if (rentedCar != null) {
-            return rentedCar.getDailyrate() * rentalDays; 
+        if (rentedCar != null && renter != null) {
+            double baseCost = rentedCar.getDailyrate() * rentalDays;
+            
+            // This line dynamically gets the 0%, 5%, or 10% discount without 
+            // needing to know what type of customer it is!
+            double discountAmount = baseCost * renter.getDiscountRate(); 
+            
+            return baseCost - discountAmount; 
         }
         return 0.0;
     }
@@ -38,21 +47,12 @@ public class Rental {
         System.out.println("=====================================");
         System.out.println("Rental ID    : " + rentalId);
         System.out.println("Customer Name: " + renter.getName());
-        System.out.println("Customer ID  : " + renter.getCustomerId());
+        System.out.println("Tier/Discount: " + renter.getMembershipTier() + " (" + (renter.getDiscountRate() * 100) + "% Off)");
         System.out.println("Car Details  : " + rentedCar.getBrand() + " " + rentedCar.getModel() + " (" + rentedCar.getPlateNum() + ")");
         System.out.println("Rental Days  : " + rentalDays + " days");
         System.out.println("Total Cost   : RM " + String.format("%.2f", totalCost));
         System.out.println("Status       : " + (isActive ? "Active" : "Completed"));
         System.out.println("=====================================\n");
-    }
-
-    public String toTextFileFormat() {
-        return rentalId + "," + 
-               rentedCar.getPlateNum() + "," + 
-               renter.getCustomerId() + "," + 
-               rentalDays + "," + 
-               totalCost + "," + 
-               isActive;
     }
 
     public String getRentalId() { return rentalId; }
@@ -63,7 +63,10 @@ public class Rental {
         this.totalCost = calculateTotalCost(); 
     }
     public Customer getRenter() { return renter; }
-    public void setRenter(Customer renter) { this.renter = renter; }
+    public void setRenter(Customer renter) { 
+        this.renter = renter; 
+        this.totalCost = calculateTotalCost(); 
+    }
     public int getRentalDays() { return rentalDays; }
     public void setRentalDays(int rentalDays) {
         if (rentalDays > 0) {
