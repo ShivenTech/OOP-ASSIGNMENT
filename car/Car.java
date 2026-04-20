@@ -1,6 +1,5 @@
 package car;
 
-// 1. THE ABSTRACT SUPERCLASS
 public abstract class Car {
     private int vehicleId;
     private String plateNum;
@@ -13,24 +12,15 @@ public abstract class Car {
     private int mileage;
 
     public Car(int vehicleId, String plateNum, String brand, String model,
-               int carYears, double dailyrate, char transmission,
-               boolean available, int mileage) {
-        this.vehicleId    = vehicleId;
-        this.plateNum     = plateNum;
-        this.brand        = brand;
-        this.model        = model;
-        this.carYears     = carYears;
-        this.dailyrate    = dailyrate;
-        this.transmission = transmission;
-        this.available    = available;
-        this.mileage      = mileage;
+               int carYears, double dailyrate, char transmission, boolean available, int mileage) {
+        this.vehicleId = vehicleId; this.plateNum = plateNum; this.brand = brand;
+        this.model = model; this.carYears = carYears; this.dailyrate = dailyrate;
+        this.transmission = transmission; this.available = available; this.mileage = mileage;
     }
 
-    // 2. POLYMORPHISM: Required methods for all vehicle types
     public abstract String getCategory();
     public abstract double getDeposit();
 
-    // Standard Getters and Setters
     public int getVehicleId() { return vehicleId; }
     public String getPlateNum() { return plateNum; }
     public String getBrand() { return brand; }

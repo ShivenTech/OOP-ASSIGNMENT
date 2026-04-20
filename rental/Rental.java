@@ -1,10 +1,9 @@
 package rental;
 
 import car.Car;
-import customer.Customer;
+import user.customer.Customer; // Updated Import
 
 public class Rental {
-    
     private String rentalId;
     private Car rentedCar;       
     private Customer renter;     
@@ -21,25 +20,16 @@ public class Rental {
         this.isActive = true; 
     }
 
-    // ==========================================
-    // POLYMORPHISM IN ACTION
-    // ==========================================
     private double calculateTotalCost() {
         if (rentedCar != null && renter != null) {
             double baseCost = rentedCar.getDailyrate() * rentalDays;
-            
-            // This line dynamically gets the 0%, 5%, or 10% discount without 
-            // needing to know what type of customer it is!
             double discountAmount = baseCost * renter.getDiscountRate(); 
-            
             return baseCost - discountAmount; 
         }
         return 0.0;
     }
 
-    public void returnCar() {
-        this.isActive = false;
-    }
+    public void returnCar() { this.isActive = false; }
 
     public void printReceipt() {
         System.out.println("\n=====================================");
@@ -56,26 +46,9 @@ public class Rental {
     }
 
     public String getRentalId() { return rentalId; }
-    public void setRentalId(String rentalId) { this.rentalId = rentalId; }
     public Car getRentedCar() { return rentedCar; }
-    public void setRentedCar(Car rentedCar) { 
-        this.rentedCar = rentedCar; 
-        this.totalCost = calculateTotalCost(); 
-    }
     public Customer getRenter() { return renter; }
-    public void setRenter(Customer renter) { 
-        this.renter = renter; 
-        this.totalCost = calculateTotalCost(); 
-    }
     public int getRentalDays() { return rentalDays; }
-    public void setRentalDays(int rentalDays) {
-        if (rentalDays > 0) {
-            this.rentalDays = rentalDays;
-            this.totalCost = calculateTotalCost(); 
-        } else {
-            System.out.println("Error: Rental days must be greater than 0.");
-        }
-    }
     public double getTotalCost() { return totalCost; }
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { this.isActive = active; }

@@ -1,16 +1,13 @@
 package dataHandler;
 
 import car.*;
-import customer.*;
+import user.customer.*; // Updated Import
+import rental.Rental;
 import java.io.*;
 import java.util.ArrayList;
-import rental.Rental;
 
 public class DataHandler {
 
-    // ==========================================
-    // 1. THE "SAVE GAME" METHODS (JSON FORMAT)
-    // ==========================================
     public static void saveAllData(ArrayList<Car> cars, ArrayList<Customer> customers, ArrayList<Rental> rentals) {
         saveCars(cars);
         saveCustomers(customers);
@@ -40,9 +37,7 @@ public class DataHandler {
                 else writer.println();
             }
             writer.println("]");
-        } catch (IOException e) {
-            System.out.println("Error saving cars: " + e.getMessage());
-        }
+        } catch (IOException e) { System.out.println("Error saving cars: " + e.getMessage()); }
     }
 
     private static void saveCustomers(ArrayList<Customer> customers) {
@@ -51,20 +46,18 @@ public class DataHandler {
             for (int i = 0; i < customers.size(); i++) {
                 Customer c = customers.get(i);
                 writer.println("  {");
-                writer.println("    \"customerId\": \"" + c.getCustomerId() + "\",");
+                writer.println("    \"customerId\": \"" + c.getId() + "\","); // Updated to getId()
                 writer.println("    \"name\": \"" + c.getName() + "\",");
                 writer.println("    \"drivingLicense\": \"" + c.getDrivingLicense() + "\",");
                 writer.println("    \"contactNumber\": \"" + c.getContactNumber() + "\",");
                 writer.println("    \"email\": \"" + c.getEmail() + "\",");
-                writer.println("    \"tier\": \"" + c.getMembershipTier() + "\""); // Added Tier!
+                writer.println("    \"tier\": \"" + c.getMembershipTier() + "\"");
                 writer.print("  }");
                 if (i < customers.size() - 1) writer.println(",");
                 else writer.println();
             }
             writer.println("]");
-        } catch (IOException e) {
-            System.out.println("Error saving customers: " + e.getMessage());
-        }
+        } catch (IOException e) { System.out.println("Error saving customers: " + e.getMessage()); }
     }
 
     private static void saveRentals(ArrayList<Rental> rentals) {
@@ -75,7 +68,7 @@ public class DataHandler {
                 writer.println("  {");
                 writer.println("    \"rentalId\": \"" + r.getRentalId() + "\",");
                 writer.println("    \"plateNum\": \"" + r.getRentedCar().getPlateNum() + "\",");
-                writer.println("    \"customerId\": \"" + r.getRenter().getCustomerId() + "\",");
+                writer.println("    \"customerId\": \"" + r.getRenter().getId() + "\","); // Updated to getId()
                 writer.println("    \"rentalDays\": " + r.getRentalDays() + ",");
                 writer.println("    \"isActive\": " + r.isActive());
                 writer.print("  }");
@@ -83,26 +76,20 @@ public class DataHandler {
                 else writer.println();
             }
             writer.println("]");
-        } catch (IOException e) {
-            System.out.println("Error saving rentals: " + e.getMessage());
-        }
+        } catch (IOException e) { System.out.println("Error saving rentals: " + e.getMessage()); }
     }
 
-    // ==========================================
-    // 2. THE "LOAD GAME" METHODS (JSON FORMAT)
-    // ==========================================
     public static void loadAllData(ArrayList<Car> cars, ArrayList<Customer> customers, ArrayList<Rental> rentals) {
         loadCars(cars);
         loadCustomers(customers);
         loadRentals(rentals, cars, customers);
     }
 
-    private static String parseJsonString(String line) {
+    private static String parseStr(String line) {
         try { return line.split(":")[1].replace("\"", "").replace(",", "").trim(); } 
         catch (Exception e) { return ""; }
     }
-
-    private static String parseJsonNumber(String line) {
+    private static String parseNum(String line) {
         try { return line.split(":")[1].replace(",", "").trim(); } 
         catch (Exception e) { return "0"; }
     }
@@ -110,29 +97,25 @@ public class DataHandler {
     private static void loadCars(ArrayList<Car> cars) {
         File file = new File("cars.json");
         if (!file.exists()) return;
-
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
-            int id = 0, year = 0, mileage = 0;
-            double rate = 0.0;
+            int id = 0, year = 0, mileage = 0; double rate = 0.0;
             String plate = "", brand = "", model = "", category = "";
-            char trans = 'A';
-            boolean available = true;
+            char trans = 'A'; boolean available = true;
 
             while ((line = reader.readLine()) != null) {
-                if (line.contains("\"vehicleId\":")) id = Integer.parseInt(parseJsonNumber(line));
-                else if (line.contains("\"plateNum\":")) plate = parseJsonString(line);
-                else if (line.contains("\"brand\":")) brand = parseJsonString(line);
-                else if (line.contains("\"model\":")) model = parseJsonString(line);
-                else if (line.contains("\"carYears\":")) year = Integer.parseInt(parseJsonNumber(line));
-                else if (line.contains("\"dailyrate\":")) rate = Double.parseDouble(parseJsonNumber(line));
-                else if (line.contains("\"transmission\":")) trans = parseJsonString(line).charAt(0);
-                else if (line.contains("\"available\":")) available = Boolean.parseBoolean(parseJsonNumber(line));
-                else if (line.contains("\"mileage\":")) mileage = Integer.parseInt(parseJsonNumber(line));
-                else if (line.contains("\"category\":")) category = parseJsonString(line);
+                if (line.contains("\"vehicleId\":")) id = Integer.parseInt(parseNum(line));
+                else if (line.contains("\"plateNum\":")) plate = parseStr(line);
+                else if (line.contains("\"brand\":")) brand = parseStr(line);
+                else if (line.contains("\"model\":")) model = parseStr(line);
+                else if (line.contains("\"carYears\":")) year = Integer.parseInt(parseNum(line));
+                else if (line.contains("\"dailyrate\":")) rate = Double.parseDouble(parseNum(line));
+                else if (line.contains("\"transmission\":")) trans = parseStr(line).charAt(0);
+                else if (line.contains("\"available\":")) available = Boolean.parseBoolean(parseNum(line));
+                else if (line.contains("\"mileage\":")) mileage = Integer.parseInt(parseNum(line));
+                else if (line.contains("\"category\":")) category = parseStr(line);
                 else if (line.contains("}")) {
                     if (!plate.isEmpty()) {
-                        // Polymorphism: Instantiate the correct subclass based on category
                         if (category.equals("SUV")) cars.add(new SUV(id, plate, brand, model, year, rate, trans, available, mileage));
                         else if (category.equals("MPV")) cars.add(new MPV(id, plate, brand, model, year, rate, trans, available, mileage));
                         else if (category.equals("Coupe")) cars.add(new Coupe(id, plate, brand, model, year, rate, trans, available, mileage));
@@ -140,85 +123,63 @@ public class DataHandler {
                         else if (category.equals("Hybrid")) cars.add(new Hybrid(id, plate, brand, model, year, rate, trans, available, mileage));
                         else if (category.equals("Sports Car")) cars.add(new SportsCar(id, plate, brand, model, year, rate, trans, available, mileage));
                         else cars.add(new Sedan(id, plate, brand, model, year, rate, trans, available, mileage));
-                        
                         plate = ""; 
                     }
                 }
             }
-        } catch (IOException | NumberFormatException e) {
-            System.out.println("No existing car JSON found. Starting fresh.");
-        }
+        } catch (Exception e) { System.out.println("No existing car JSON found."); }
     }
 
     private static void loadCustomers(ArrayList<Customer> customers) {
         File file = new File("customers.json");
         if (!file.exists()) return;
-
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             String id = "", name = "", license = "", phone = "", email = "", tier = "";
-
             while ((line = reader.readLine()) != null) {
-                if (line.contains("\"customerId\":")) id = parseJsonString(line);
-                else if (line.contains("\"name\":")) name = parseJsonString(line);
-                else if (line.contains("\"drivingLicense\":")) license = parseJsonString(line);
-                else if (line.contains("\"contactNumber\":")) phone = parseJsonString(line);
-                else if (line.contains("\"email\":")) email = parseJsonString(line);
-                else if (line.contains("\"tier\":")) tier = parseJsonString(line);
+                if (line.contains("\"customerId\":")) id = parseStr(line);
+                else if (line.contains("\"name\":")) name = parseStr(line);
+                else if (line.contains("\"drivingLicense\":")) license = parseStr(line);
+                else if (line.contains("\"contactNumber\":")) phone = parseStr(line);
+                else if (line.contains("\"email\":")) email = parseStr(line);
+                else if (line.contains("\"tier\":")) tier = parseStr(line);
                 else if (line.contains("}")) {
                     if (!id.isEmpty()) {
-                        // Polymorphism: Instantiate the correct subclass based on Tier
-                        if (tier.equals("Gold")) {
-                            customers.add(new GoldCustomer(id, name, license, phone, email));
-                        } else if (tier.equals("Platinum")) {
-                            customers.add(new PlatinumCustomer(id, name, license, phone, email));
-                        } else {
-                            customers.add(new NormalCustomer(id, name, license, phone, email));
-                        }
+                        if (tier.equals("Gold")) customers.add(new GoldCustomer(id, name, license, phone, email));
+                        else if (tier.equals("Platinum")) customers.add(new PlatinumCustomer(id, name, license, phone, email));
+                        else customers.add(new NormalCustomer(id, name, license, phone, email));
                         id = ""; tier = "";
                     }
                 }
             }
-        } catch (IOException e) {
-            System.out.println("No existing customer JSON found. Starting fresh.");
-        }
+        } catch (Exception e) { System.out.println("No existing customer JSON found."); }
     }
 
     private static void loadRentals(ArrayList<Rental> rentals, ArrayList<Car> cars, ArrayList<Customer> customers) {
         File file = new File("rentals.json");
         if (!file.exists()) return;
-
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            String rentId = "", plate = "", custId = "";
-            int days = 0;
-            boolean isActive = true;
-
+            String line; String rentId = "", plate = "", custId = ""; int days = 0; boolean isActive = true;
             while ((line = reader.readLine()) != null) {
-                if (line.contains("\"rentalId\":")) rentId = parseJsonString(line);
-                else if (line.contains("\"plateNum\":")) plate = parseJsonString(line);
-                else if (line.contains("\"customerId\":")) custId = parseJsonString(line);
-                else if (line.contains("\"rentalDays\":")) days = Integer.parseInt(parseJsonNumber(line));
-                else if (line.contains("\"isActive\":")) isActive = Boolean.parseBoolean(parseJsonNumber(line));
+                if (line.contains("\"rentalId\":")) rentId = parseStr(line);
+                else if (line.contains("\"plateNum\":")) plate = parseStr(line);
+                else if (line.contains("\"customerId\":")) custId = parseStr(line);
+                else if (line.contains("\"rentalDays\":")) days = Integer.parseInt(parseNum(line));
+                else if (line.contains("\"isActive\":")) isActive = Boolean.parseBoolean(parseNum(line));
                 else if (line.contains("}")) {
                     if (!rentId.isEmpty()) {
                         Car linkedCar = null;
                         for (Car c : cars) if (c.getPlateNum().equals(plate)) { linkedCar = c; break; }
-                        
                         Customer linkedCust = null;
-                        for (Customer c : customers) if (c.getCustomerId().equals(custId)) { linkedCust = c; break; }
-
+                        for (Customer c : customers) if (c.getId().equals(custId)) { linkedCust = c; break; } // Updated
                         if (linkedCar != null && linkedCust != null) {
                             Rental r = new Rental(rentId, linkedCar, linkedCust, days);
-                            r.setActive(isActive);
-                            rentals.add(r);
+                            r.setActive(isActive); rentals.add(r);
                         }
                         rentId = ""; 
                     }
                 }
             }
-        } catch (IOException | NumberFormatException e) {
-            System.out.println("No existing rental JSON found. Starting fresh.");
-        }
+        } catch (Exception e) { System.out.println("No existing rental JSON found."); }
     }
 }
