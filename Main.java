@@ -444,7 +444,8 @@ public class Main {
             System.out.print("Choice: "); int type = scanner.nextInt(); scanner.nextLine();
 
             int id = carList.size() + 1001; 
-            Car newCar = switch(type) {
+            Car newCar;
+            switch(type) {
                 case 2 -> new SUV(id, plate, brand, model, year, rate, trans, true, mileage);
                 case 3 -> new MPV(id, plate, brand, model, year, rate, trans, true, mileage);
                 case 4 -> new Coupe(id, plate, brand, model, year, rate, trans, true, mileage);

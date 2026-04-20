@@ -36,12 +36,16 @@ public class Customer extends User { // Note: No longer 'abstract'!
 
     // Dynamic Discount Calculation
     public double getDiscountRate() {
-        return switch(getMembershipTier()) {
-            case "Platinum" -> 0.15; // 15%
-            case "Gold" -> 0.10;     // 10%
-            case "Silver" -> 0.05;   // 5%
-            default -> 0.0;          // 0%
-        };
+        String tier = getMembershipTier();
+        if (tier.equals("Platinum")) {
+            return 0.15; // 15%
+        } else if (tier.equals("Gold")) {
+            return 0.10; // 10%
+        } else if (tier.equals("Silver")) {
+            return 0.05; // 5%
+        } else {
+            return 0.0;  // 0%
+        }
     }
 
     // Getters and Setters
