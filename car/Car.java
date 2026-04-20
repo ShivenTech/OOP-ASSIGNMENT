@@ -31,4 +31,11 @@ public abstract class Car {
     public boolean isAvailable() { return available; }
     public void setAvailable(boolean available) { this.available = available; }
     public int getMileage() { return mileage; }
+    public void setPlateNum(String plateNum) { this.plateNum = plateNum; }
+    public void setBrand(String brand) { this.brand = brand; }
+    public void setModel(String model) { this.model = model; }
+    public void setCarYears(int carYears) { this.carYears = carYears; }
+    public void setDailyrate(double dailyrate) { this.dailyrate = dailyrate; }
+    public void setTransmission(char transmission) { this.transmission = transmission; }
+    public void setMileage(int mileage) { this.mileage = mileage; }
 }

@@ -267,7 +267,7 @@
     "carYears": 2022,
     "dailyrate": 2500.0,
     "transmission": "A",
-    "available": true,
+    "available": false,
     "mileage": 2000,
     "category": "Sports Car",
     "deposit": 1500.0

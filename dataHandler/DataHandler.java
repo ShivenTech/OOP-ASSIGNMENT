@@ -54,7 +54,9 @@ public class DataHandler {
                 writer.println("    \"drivingLicense\": \"" + c.getDrivingLicense() + "\",");
                 writer.println("    \"contactNumber\": \"" + c.getContactNumber() + "\",");
                 writer.println("    \"email\": \"" + c.getEmail() + "\",");
-                writer.println("    \"tier\": \"" + c.getMembershipTier() + "\"");
+                writer.println("    \"password\": \"" + c.getPassword() + "\",");
+                writer.println("    \"totalSpent\": " + c.getTotalSpent() + ","); // NEW
+                writer.println("    \"manualTierOverride\": \"" + c.getManualTierOverride() + "\""); // NEW
                 writer.print("  }");
                 if (i < customers.size() - 1) writer.println(",");
                 else writer.println();
@@ -161,20 +163,29 @@ public class DataHandler {
         if (!file.exists()) return;
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
-            String id = "", name = "", license = "", phone = "", email = "", tier = "";
+            String id = "", name = "", license = "", phone = "", email = "";
+            String password = "pass123"; 
+            double totalSpent = 0.0;
+            String override = "None", legacyTier = "";
+            
             while ((line = reader.readLine()) != null) {
                 if (line.contains("\"customerId\":")) id = parseStr(line);
                 else if (line.contains("\"name\":")) name = parseStr(line);
                 else if (line.contains("\"drivingLicense\":")) license = parseStr(line);
                 else if (line.contains("\"contactNumber\":")) phone = parseStr(line);
                 else if (line.contains("\"email\":")) email = parseStr(line);
-                else if (line.contains("\"tier\":")) tier = parseStr(line);
+                else if (line.contains("\"password\":")) password = parseStr(line);
+                else if (line.contains("\"totalSpent\":")) totalSpent = Double.parseDouble(parseNum(line));
+                else if (line.contains("\"manualTierOverride\":")) override = parseStr(line);
+                else if (line.contains("\"tier\":")) legacyTier = parseStr(line); // Just in case it's the old JSON format
                 else if (line.contains("}")) {
                     if (!id.isEmpty()) {
-                        if (tier.equals("Gold")) customers.add(new GoldCustomer(id, name, license, phone, email));
-                        else if (tier.equals("Platinum")) customers.add(new PlatinumCustomer(id, name, license, phone, email));
-                        else customers.add(new NormalCustomer(id, name, license, phone, email));
-                        id = ""; tier = "";
+                        // Protect old users: If they had a rank in the old system, lock it in as an override!
+                        if (override.equals("None") && !legacyTier.isEmpty() && !legacyTier.equals("Normal")) {
+                            override = legacyTier;
+                        }
+                        customers.add(new Customer(id, name, license, phone, email, password, totalSpent, override));
+                        id = ""; legacyTier = ""; override = "None"; totalSpent = 0.0; password = "pass123";
                     }
                 }
             }

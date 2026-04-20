@@ -1,0 +1,18 @@
+[
+  {
+    "empId": "E001",
+    "name": "Boss Admin",
+    "contactNumber": "011-1111",
+    "email": "boss@company.com",
+    "password": "admin123",
+    "role": "Admin"
+  },
+  {
+    "empId": "E002",
+    "name": "Desk Staff",
+    "contactNumber": "012-2222",
+    "email": "staff@company.com",
+    "password": "staff123",
+    "role": "Staff"
+  }
+]
