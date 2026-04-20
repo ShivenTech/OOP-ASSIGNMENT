@@ -70,9 +70,9 @@ public class Main {
                         DataHandler.saveAllData(carList, customerList, rentalList, employeeList);
                         System.out.println("Exiting the system. Goodbye!");
                         running = false; break;
-                    default: System.out.println("Invalid option.");
+                    default: System.out.println("Invalid option. Please Enter Option (0 - 3)");
                 }
-            } catch (Exception e) { System.out.println("Error: Invalid input."); scanner.nextLine(); }
+            } catch (Exception e) { System.out.println("Error: Invalid input. Please try again."); scanner.nextLine(); }
         }
     }
 
@@ -95,7 +95,7 @@ public class Main {
                     case 2: manageCustomerMenu(); break;
                     case 3: manageStaffMenu(admin); break;
                     case 0: active = false; break;
-                    default: System.out.println("Invalid option.");
+                    default: System.out.println("Invalid option. Please Enter Option (0 - 3)");
                 }
             } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
         }
@@ -117,7 +117,7 @@ public class Main {
                     case 2: viewAvailableCars(); break;
                     case 3: staffManageCustomerMenu(); break; 
                     case 0: active = false; break;
-                    default: System.out.println("Invalid option.");
+                    default: System.out.println("Invalid option. Please Enter Option (0 - 3)");
                 }
             } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
         }
@@ -144,7 +144,7 @@ public class Main {
                     case 3: addNewCar(); break;
                     case 4: updateCarDetails(); break;
                     case 0: active = false; break;
-                    default: System.out.println("Invalid option.");
+                    default: System.out.println("Invalid option. Please Enter Option (0 - 4)");
                 }
             } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
         }
@@ -187,7 +187,7 @@ public class Main {
                         break;
                     case 8: System.out.print("New Mileage (km): "); carToUpdate.setMileage(scanner.nextInt()); scanner.nextLine(); break;
                     case 0: updating = false; break;
-                    default: System.out.println("Invalid option.");
+                    default: System.out.println("Invalid option. Please Enter Option (0 - 8)");
                 }
                 if(choice > 0 && choice <= 8) System.out.println("Update successful!");
             }
@@ -205,7 +205,7 @@ public class Main {
             System.out.println("2. Update Customer Details");
             System.out.println("3. Delete Customer");
             System.out.println("4. View All Customers");
-            System.out.println("5. Override Customer Loyalty Tier (Bypass)"); // NEW ADMIN POWER
+            System.out.println("5. Override Customer Loyalty Tier (Bypass)"); 
             System.out.println("0. Return");
             System.out.print("Select an option: ");
             try {
@@ -215,9 +215,9 @@ public class Main {
                     case 2: updateCustomerDetails(); break;
                     case 3: deleteCustomer(); break;
                     case 4: viewAllCustomers(); break;
-                    case 5: overrideCustomerTier(); break; // NEW
+                    case 5: overrideCustomerTier(); break; 
                     case 0: active = false; break;
-                    default: System.out.println("Invalid option.");
+                    default: System.out.println("Invalid option. Please Enter Option (0 - 5)");
                 }
             } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
         }
@@ -243,7 +243,7 @@ public class Main {
                     case 2: deleteCustomer(); break;
                     case 3: viewAllCustomers(); break;
                     case 0: active = false; break;
-                    default: System.out.println("Invalid option.");
+                    default: System.out.println("Invalid option. Please Enter Option (0 - 3)");
                 }
             } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
         }
@@ -277,7 +277,7 @@ public class Main {
                     case 3: System.out.print("New Phone: "); c.setContactNumber(scanner.nextLine()); break;
                     case 4: System.out.print("New Email: "); c.setEmail(scanner.nextLine()); break;
                     case 0: updating = false; break;
-                    default: System.out.println("Invalid.");
+                    default: System.out.println("Invalid. Please Enter Option (0 - 4)");
                 }
                 if(choice > 0 && choice <= 4) System.out.println("Update successful!");
             } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
@@ -303,7 +303,6 @@ public class Main {
         System.out.println("SUCCESS: Customer " + toDelete.getName() + " deleted.");
     }
 
-    // NEW: ADMIN OVERRIDE FEATURE
     public static void overrideCustomerTier() {
         System.out.println("\n--- OVERRIDE CUSTOMER TIER ---");
         System.out.print("Enter Customer ID to override (e.g., C001): ");
@@ -333,11 +332,10 @@ public class Main {
                 case 4: c.setManualTierOverride("Platinum"); System.out.println("Customer permanently forced to Platinum."); break;
                 case 5: c.setManualTierOverride("None"); System.out.println("Override removed. System will auto-calculate tier based on spending."); break;
                 case 0: return;
-                default: System.out.println("Invalid choice.");
+                default: System.out.println("Invalid choice. Please Enter Option (0 - 5)");
             }
         } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
     }
-
 
     // ==========================================
     // 3. MANAGE STAFF MODULE
@@ -360,7 +358,7 @@ public class Main {
                     case 3: deleteEmployee(loggedInAdmin); break;
                     case 4: viewAllEmployees(); break;
                     case 0: active = false; break;
-                    default: System.out.println("Invalid option.");
+                    default: System.out.println("Invalid option. Please Enter Option (0 - 4)");
                 }
             } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
         }
@@ -404,7 +402,7 @@ public class Main {
                     case 3: System.out.print("New Email: "); emp.setEmail(scanner.nextLine()); break;
                     case 4: System.out.print("New Password: "); emp.setPassword(scanner.nextLine()); break;
                     case 0: updating = false; break;
-                    default: System.out.println("Invalid.");
+                    default: System.out.println("Invalid. Please Enter Option (0 - 4)");
                 }
                 if(choice > 0 && choice <= 4) System.out.println("Update successful!");
             } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
@@ -460,7 +458,6 @@ public class Main {
         } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
     }
 
-    // UPGRADED: No longer asks for tier! Instantiates standard unified Customer class.
     public static void addNewCustomer() {
         System.out.println("\n--- REGISTRATION ---");
         try {
@@ -472,7 +469,6 @@ public class Main {
 
             String id = String.format("C%03d", customerList.size() + 1);
             
-            // All new customers start with 0 spending and "None" as the override!
             Customer newCust = new Customer(id, name, license, phone, email, password, 0.0, "None");
             customerList.add(newCust);
             
@@ -526,7 +522,7 @@ public class Main {
                         System.out.print("Enter Car Plate (e.g., ABC1233): "); 
                         printFilteredRentals("PLATE", scanner.nextLine()); break;
                     case 0: active = false; break;
-                    default: System.out.println("Invalid option.");
+                    default: System.out.println("Invalid option. Please Enter Option (0 - 5)");
                 }
             } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
         }
@@ -623,7 +619,7 @@ public class Main {
         boolean active = true;
         while (active) {
             System.out.println("\n--- CUSTOMER DASHBOARD (" + activeCustomer.getMembershipTier() + ") ---");
-            System.out.println("Total Lifetime Spend: RM " + activeCustomer.getTotalSpent()); // Bonus feature!
+            System.out.println("Total Lifetime Spend: RM " + activeCustomer.getTotalSpent()); 
             System.out.println("1. View Available Cars");
             System.out.println("2. Rent a Car");
             System.out.println("3. Return a Car");
@@ -644,13 +640,13 @@ public class Main {
                         System.out.println("SUCCESS: Password updated!");
                         break;
                     case 0: active = false; break;
-                    default: System.out.println("Invalid option.");
+                    default: System.out.println("Invalid option. Please Enter Option (0 - 5)");
                 }
             } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
         }
     }
 
-    // UPGRADED: Now tracks spending for loyalty program!
+    // THE 30-DAY LIMIT VALIDATION IS HERE
     public static void rentCar(Customer activeCustomer) {
         System.out.println("\n--- RENT A CAR ---");
         try {
@@ -661,13 +657,17 @@ public class Main {
             if (selectedCar == null) { System.out.println("Error: Car not found."); return; }
             if (!selectedCar.isAvailable()) { System.out.println("Sorry, car is rented out."); return; }
             
-            System.out.print("Enter number of days to rent: "); int days = scanner.nextInt(); scanner.nextLine(); 
-            if (days <= 0) { System.out.println("Error: Must be at least 1 day."); return; }
+            System.out.print("Enter number of days to rent (Max 30 days): "); int days = scanner.nextInt(); scanner.nextLine(); 
+            
+            // Rejects inputs over 30 days instantly
+            if (days <= 0 || days > 30) { 
+                System.out.println("DENIED: You can only rent a car for 1 to 30 days."); 
+                return; 
+            }
 
             String newRentalId = "R" + (rentalList.size() + 1001); 
             Rental newRental = new Rental(newRentalId, selectedCar, activeCustomer, days);
             
-            // NEW: Add the cost of this rental to the customer's total lifetime spending
             activeCustomer.addSpending(newRental.getTotalCost());
             
             rentalList.add(newRental);
@@ -677,7 +677,7 @@ public class Main {
             System.out.println("(Your total spending has been updated to count towards your next Tier upgrade!)");
             newRental.printReceipt();
             
-        } catch (Exception e) { System.out.println("Error: Invalid input."); scanner.nextLine(); }
+        } catch (Exception e) { System.out.println("Error: Invalid input. Number of day(s) cannot exceed 30 days"); scanner.nextLine(); }
     }
 
     public static void returnCar(Customer activeCustomer) {
@@ -710,7 +710,6 @@ public class Main {
 
     public static void initializeDummyData() {
         carList.add(new Sedan(101, "SED1111", "Toyota", "Vios", 2023, 120.0, 'A', true, 5000));
-        // Unified customer format
         customerList.add(new Customer("C001", "Ali Bin Abu", "L987654", "0123456789", "ali@email.com", "pass123", 0.0, "None"));
         System.out.println(">> System initialized with dummy data.");
     }

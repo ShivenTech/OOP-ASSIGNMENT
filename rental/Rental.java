@@ -1,7 +1,7 @@
 package rental;
 
 import car.Car;
-import user.customer.Customer; // Updated Import
+import user.customer.Customer; 
 
 public class Rental {
     private String rentalId;
@@ -52,4 +52,14 @@ public class Rental {
     public double getTotalCost() { return totalCost; }
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { this.isActive = active; }
+    
+    // THE 30-DAY LIMIT VALIDATION
+    public void setRentalDays(int rentalDays) {
+        if (rentalDays > 0 && rentalDays <= 30) {
+            this.rentalDays = rentalDays;
+            this.totalCost = calculateTotalCost(); 
+        } else {
+            System.out.println("Error: Rental days must be between 1 and 30.");
+        }
+    }
 }
