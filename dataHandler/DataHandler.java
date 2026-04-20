@@ -1,17 +1,20 @@
 package dataHandler;
 
 import car.*;
-import user.customer.*; // Updated Import
+import user.customer.*; 
+import user.employee.*; // NEW: Import employee classes
 import rental.Rental;
 import java.io.*;
 import java.util.ArrayList;
 
 public class DataHandler {
 
-    public static void saveAllData(ArrayList<Car> cars, ArrayList<Customer> customers, ArrayList<Rental> rentals) {
+    // UPDATE: Now accepts the employee list!
+    public static void saveAllData(ArrayList<Car> cars, ArrayList<Customer> customers, ArrayList<Rental> rentals, ArrayList<Employee> employees) {
         saveCars(cars);
         saveCustomers(customers);
         saveRentals(rentals);
+        saveEmployees(employees); // NEW
         System.out.println(">> System data successfully saved to JSON files.");
     }
 
@@ -46,7 +49,7 @@ public class DataHandler {
             for (int i = 0; i < customers.size(); i++) {
                 Customer c = customers.get(i);
                 writer.println("  {");
-                writer.println("    \"customerId\": \"" + c.getId() + "\","); // Updated to getId()
+                writer.println("    \"customerId\": \"" + c.getId() + "\","); 
                 writer.println("    \"name\": \"" + c.getName() + "\",");
                 writer.println("    \"drivingLicense\": \"" + c.getDrivingLicense() + "\",");
                 writer.println("    \"contactNumber\": \"" + c.getContactNumber() + "\",");
@@ -60,6 +63,27 @@ public class DataHandler {
         } catch (IOException e) { System.out.println("Error saving customers: " + e.getMessage()); }
     }
 
+    // NEW: Save Employees to JSON
+    private static void saveEmployees(ArrayList<Employee> employees) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("employees.json"))) {
+            writer.println("[");
+            for (int i = 0; i < employees.size(); i++) {
+                Employee e = employees.get(i);
+                writer.println("  {");
+                writer.println("    \"empId\": \"" + e.getId() + "\","); 
+                writer.println("    \"name\": \"" + e.getName() + "\",");
+                writer.println("    \"contactNumber\": \"" + e.getContactNumber() + "\",");
+                writer.println("    \"email\": \"" + e.getEmail() + "\",");
+                writer.println("    \"password\": \"" + e.getPassword() + "\",");
+                writer.println("    \"role\": \"" + e.getRole() + "\"");
+                writer.print("  }");
+                if (i < employees.size() - 1) writer.println(",");
+                else writer.println();
+            }
+            writer.println("]");
+        } catch (IOException e) { System.out.println("Error saving employees: " + e.getMessage()); }
+    }
+
     private static void saveRentals(ArrayList<Rental> rentals) {
         try (PrintWriter writer = new PrintWriter(new FileWriter("rentals.json"))) {
             writer.println("[");
@@ -68,7 +92,7 @@ public class DataHandler {
                 writer.println("  {");
                 writer.println("    \"rentalId\": \"" + r.getRentalId() + "\",");
                 writer.println("    \"plateNum\": \"" + r.getRentedCar().getPlateNum() + "\",");
-                writer.println("    \"customerId\": \"" + r.getRenter().getId() + "\","); // Updated to getId()
+                writer.println("    \"customerId\": \"" + r.getRenter().getId() + "\","); 
                 writer.println("    \"rentalDays\": " + r.getRentalDays() + ",");
                 writer.println("    \"isActive\": " + r.isActive());
                 writer.print("  }");
@@ -79,9 +103,11 @@ public class DataHandler {
         } catch (IOException e) { System.out.println("Error saving rentals: " + e.getMessage()); }
     }
 
-    public static void loadAllData(ArrayList<Car> cars, ArrayList<Customer> customers, ArrayList<Rental> rentals) {
+    // UPDATE: Now accepts the employee list!
+    public static void loadAllData(ArrayList<Car> cars, ArrayList<Customer> customers, ArrayList<Rental> rentals, ArrayList<Employee> employees) {
         loadCars(cars);
         loadCustomers(customers);
+        loadEmployees(employees); // NEW
         loadRentals(rentals, cars, customers);
     }
 
@@ -155,6 +181,32 @@ public class DataHandler {
         } catch (Exception e) { System.out.println("No existing customer JSON found."); }
     }
 
+    // NEW: Load Employees from JSON
+    private static void loadEmployees(ArrayList<Employee> employees) {
+        File file = new File("employees.json");
+        if (!file.exists()) return;
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            String id = "", name = "", phone = "", email = "", password = "", role = "";
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("\"empId\":")) id = parseStr(line);
+                else if (line.contains("\"name\":")) name = parseStr(line);
+                else if (line.contains("\"contactNumber\":")) phone = parseStr(line);
+                else if (line.contains("\"email\":")) email = parseStr(line);
+                else if (line.contains("\"password\":")) password = parseStr(line);
+                else if (line.contains("\"role\":")) role = parseStr(line);
+                else if (line.contains("}")) {
+                    if (!id.isEmpty()) {
+                        // Polymorphism: Rebuild them as the correct subclass!
+                        if (role.equals("Admin")) employees.add(new Admin(id, name, phone, email, password));
+                        else employees.add(new Staff(id, name, phone, email, password));
+                        id = ""; role = "";
+                    }
+                }
+            }
+        } catch (Exception e) { System.out.println("No existing employee JSON found."); }
+    }
+
     private static void loadRentals(ArrayList<Rental> rentals, ArrayList<Car> cars, ArrayList<Customer> customers) {
         File file = new File("rentals.json");
         if (!file.exists()) return;
@@ -171,7 +223,7 @@ public class DataHandler {
                         Car linkedCar = null;
                         for (Car c : cars) if (c.getPlateNum().equals(plate)) { linkedCar = c; break; }
                         Customer linkedCust = null;
-                        for (Customer c : customers) if (c.getId().equals(custId)) { linkedCust = c; break; } // Updated
+                        for (Customer c : customers) if (c.getId().equals(custId)) { linkedCust = c; break; } 
                         if (linkedCar != null && linkedCust != null) {
                             Rental r = new Rental(rentId, linkedCar, linkedCust, days);
                             r.setActive(isActive); rentals.add(r);

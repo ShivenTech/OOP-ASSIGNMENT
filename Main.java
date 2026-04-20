@@ -19,13 +19,16 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Booting up Car Rental System...");
-        DataHandler.loadAllData(carList, customerList, rentalList);
+        
+        DataHandler.loadAllData(carList, customerList, rentalList, employeeList);
         
         if (carList.isEmpty() && customerList.isEmpty()) {
             initializeDummyData();
         }
         
-        initializeEmployees(); 
+        if (employeeList.isEmpty()) {
+            initializeEmployees(); 
+        }
         
         boolean running = true;
         while (running) {
@@ -74,7 +77,7 @@ public class Main {
                         break;
                     case 0:
                         System.out.println("\nInitiating shutdown sequence...");
-                        DataHandler.saveAllData(carList, customerList, rentalList);
+                        DataHandler.saveAllData(carList, customerList, rentalList, employeeList);
                         System.out.println("Exiting the system. Goodbye!");
                         running = false; break;
                     default: System.out.println("Invalid option.");
@@ -92,8 +95,11 @@ public class Main {
             System.out.println("3. Add a New Car");
             System.out.println("4. Register a New Customer");
             System.out.println("5. View All Registered Customers");
+            System.out.println("6. Register a New Staff");
+            System.out.println("7. Register a New Admin");
+            System.out.println("8. View All Registered Employees");
             System.out.println("0. Log Out to Main Menu");
-            System.out.print("Select an option (0-5): ");
+            System.out.print("Select an option (0-8): ");
             try {
                 int choice = scanner.nextInt(); scanner.nextLine(); 
                 switch (choice) {
@@ -102,6 +108,9 @@ public class Main {
                     case 3: addNewCar(); break;
                     case 4: addNewCustomer(); break;
                     case 5: viewAllCustomers(); break;
+                    case 6: addNewEmployee("Staff"); break;
+                    case 7: addNewEmployee("Admin"); break;
+                    case 8: viewAllEmployees(); break;
                     case 0: active = false; break;
                     default: System.out.println("Invalid option.");
                 }
@@ -117,7 +126,7 @@ public class Main {
             System.out.println("2. View All Available Cars");
             System.out.println("3. View All Registered Customers");
             System.out.println("0. Log Out to Main Menu");
-            System.out.println("(Note: Staff cannot add new inventory.)");
+            System.out.println("(Note: Staff cannot add new inventory or employees.)");
             System.out.print("Select an option (0-3): ");
             try {
                 int choice = scanner.nextInt(); scanner.nextLine(); 
@@ -327,6 +336,43 @@ public class Main {
             customerList.add(newCust);
             System.out.println("SUCCESS: Customer registered! ID: " + id);
         } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
+    }
+
+    // ==========================================
+    // NEW: EMPLOYEE MANAGEMENT METHODS
+    // ==========================================
+    public static void addNewEmployee(String role) {
+        System.out.println("\n--- REGISTER NEW " + role.toUpperCase() + " ---");
+        try {
+            System.out.print("Full Name: "); String name = scanner.nextLine();
+            System.out.print("Contact Number: "); String phone = scanner.nextLine();
+            System.out.print("Email: "); String email = scanner.nextLine();
+            System.out.print("Set Password: "); String password = scanner.nextLine();
+
+            // Auto-generate E003, E004, etc.
+            String id = String.format("E%03d", employeeList.size() + 1);
+            
+            Employee newEmp;
+            if (role.equals("Admin")) {
+                newEmp = new Admin(id, name, phone, email, password);
+            } else {
+                newEmp = new Staff(id, name, phone, email, password);
+            }
+            
+            employeeList.add(newEmp);
+            System.out.println("SUCCESS: " + role + " account created! Login ID: " + id);
+        } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
+    }
+
+    public static void viewAllEmployees() {
+        System.out.println("\n--- ALL REGISTERED EMPLOYEES ---");
+        if (employeeList.isEmpty()) { System.out.println("No employees found."); return; }
+        
+        System.out.printf("%-10s %-20s %-15s %-25s %-10s\n", "Emp ID", "Name", "Phone", "Email", "Role");
+        System.out.println("------------------------------------------------------------------------------------");
+        for (Employee e : employeeList) {
+            System.out.printf("%-10s %-20s %-15s %-25s %-10s\n", e.getId(), e.getName(), e.getContactNumber(), e.getEmail(), e.getRole());
+        }
     }
 
     private static void sortRecordsByBrand() {
