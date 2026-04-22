@@ -231,8 +231,7 @@ public class Main {
         while (active) {
             System.out.println("\n--- STAFF: MANAGE CUSTOMERS ---");
             System.out.println("1. Update Customer Details (Non-Confidential)");
-            System.out.println("2. Delete Customer");
-            System.out.println("3. View All Customers");
+            System.out.println("2. View All Customers");
             System.out.println("0. Return");
             System.out.println("(Note: Staff cannot register accounts or alter tiers/passwords.)");
             System.out.print("Select an option: ");
@@ -240,10 +239,9 @@ public class Main {
                 int choice = scanner.nextInt(); scanner.nextLine(); 
                 switch (choice) {
                     case 1: updateCustomerDetails(); break; 
-                    case 2: deleteCustomer(); break;
-                    case 3: viewAllCustomers(); break;
+                    case 2: viewAllCustomers(); break;
                     case 0: active = false; break;
-                    default: System.out.println("Invalid option. Please Enter Option (0 - 3)");
+                    default: System.out.println("Invalid option. Please Enter Option (0 - 2)");
                 }
             } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
         }
