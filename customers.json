@@ -1,2 +1,12 @@
 [
+  {
+    "customerId": "C001",
+    "name": "Ali Bin Abu",
+    "drivingLicense": "L987654",
+    "contactNumber": "0123456789",
+    "email": "ali@email.com",
+    "password": "pass123",
+    "totalSpent": 0.0,
+    "manualTierOverride": "None"
+  }
 ]

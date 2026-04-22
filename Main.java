@@ -20,8 +20,20 @@ public class Main {
         System.out.println("Booting up Car Rental System...");
         DataHandler.loadAllData(carList, customerList, rentalList, employeeList);
         
-        if (carList.isEmpty() && customerList.isEmpty()) initializeDummyData();
-        if (employeeList.isEmpty()) initializeEmployees(); 
+        if (carList.isEmpty()) {
+            carList.add(new Sedan(101, "SED1111", "Toyota", "Vios", 2023, 120.0, 'A', true, 5000));
+            System.out.println(">> System initialized with dummy Car.");
+        }
+        
+        if (customerList.isEmpty()) {
+            customerList.add(new Customer("C001", "Ali Bin Abu", "L987654", "0123456789", "ali@email.com", "pass123", 0.0, "None"));
+            System.out.println(">> System initialized with dummy Customer.");
+        }
+        
+        if (employeeList.isEmpty()) {
+            initializeEmployees(); 
+            System.out.println(">> System initialized with dummy Employees.");
+        }
         
         boolean running = true;
         while (running) {
@@ -708,11 +720,5 @@ public class Main {
     public static void initializeEmployees() {
         employeeList.add(new Admin("E001", "Boss Admin", "011-1111", "boss@company.com", "admin123"));
         employeeList.add(new Staff("E002", "Desk Staff", "012-2222", "staff@company.com", "staff123"));
-    }
-
-    public static void initializeDummyData() {
-        carList.add(new Sedan(101, "SED1111", "Toyota", "Vios", 2023, 120.0, 'A', true, 5000));
-        customerList.add(new Customer("C001", "Ali Bin Abu", "L987654", "0123456789", "ali@email.com", "pass123", 0.0, "None"));
-        System.out.println(">> System initialized with dummy data.");
     }
 }
