@@ -599,7 +599,7 @@ public class Main {
     }
 
     private static void printFilteredCars(String filterType, String filterValue) {
-        System.out.printf("\n%-10s %-12s %-15s %-15s %-10s\n", "Plate", "Brand", "Model", "Rate/Day (RM)", "Category");
+        System.out.printf("\n%-10s %-12s %-20s %-15s %-10s\n", "Plate", "Brand", "Model", "Rate/Day (RM)", "Category");
         System.out.println("----------------------------------------------------------------------");
         for (Car car : carList) {
             if (!car.isAvailable()) continue; 
