@@ -528,7 +528,7 @@ public class Main {
                     case 0: active = false; break;
                     default: System.out.println("Invalid option. Please Enter Option (0 - 5)");
                 }
-            } catch (Exception e) { System.out.println("There is no rental made yet."); scanner.nextLine(); }
+            } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
         }
     }
 
