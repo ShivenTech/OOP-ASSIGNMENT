@@ -660,7 +660,6 @@ public class Main {
         }
     }
 
-    // THE 30-DAY LIMIT VALIDATION IS HERE
     public static void rentCar(Customer activeCustomer) {
         System.out.println("\n--- RENT A CAR ---");
         try {
@@ -673,7 +672,6 @@ public class Main {
             
             System.out.print("Enter number of days to rent (Max 30 days): "); int days = scanner.nextInt(); scanner.nextLine(); 
             
-            // Rejects inputs over 30 days instantly
             if (days <= 0 || days > 30) { 
                 System.out.println("DENIED: You can only rent a car for 1 to 30 days."); 
                 return; 
@@ -682,16 +680,16 @@ public class Main {
             String newRentalId = "R" + (rentalList.size() + 1001); 
             Rental newRental = new Rental(newRentalId, selectedCar, activeCustomer, days);
             
-            activeCustomer.addSpending(newRental.getTotalCost());
+            // NOTE: activeCustomer.addSpending() has been removed from here!
             
             rentalList.add(newRental);
             selectedCar.setAvailable(false); 
 
             System.out.println("\nSUCCESS: Car successfully rented!");
-            System.out.println("(Your total spending has been updated to count towards your next Tier upgrade!)");
+            System.out.println("(Note: Your loyalty spending will be updated once the car is returned.)");
             newRental.printReceipt();
             
-        } catch (Exception e) { System.out.println("Error: Invalid input. Number of day(s) cannot exceed 30 days"); scanner.nextLine(); }
+        } catch (Exception e) { System.out.println("Error: Invalid input."); scanner.nextLine(); }
     }
 
     public static void returnCar(Customer activeCustomer) {
@@ -706,7 +704,18 @@ public class Main {
 
         rentalToReturn.returnCar(); 
         rentalToReturn.getRentedCar().setAvailable(true); 
+        
+        // NEW: Update their loyalty profile now that the transaction is complete!
+        activeCustomer.addSpending(rentalToReturn.getTotalCost());
+        
         System.out.println("SUCCESS: Car " + rentalToReturn.getRentedCar().getPlateNum() + " returned.");
+        System.out.println(">> RM " + String.format("%.2f", rentalToReturn.getTotalCost()) + " has been added to your lifetime spend!");
+        
+        // Optional Bonus: Check if they just leveled up and congratulate them!
+        String currentTier = activeCustomer.getMembershipTier();
+        if (!currentTier.equals("Normal") && activeCustomer.getManualTierOverride().equals("None")) {
+            System.out.println(">> TIER STATUS: You are currently a " + currentTier + " member!");
+        }
     }
 
     // ==========================================
