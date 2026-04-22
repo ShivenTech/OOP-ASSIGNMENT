@@ -445,15 +445,18 @@ public class Main {
 
             int id = carList.size() + 1001; 
             Car newCar;
+            
+            // CORRECTED: Classic switch statement with assignments and breaks!
             switch(type) {
-                case 2 -> new SUV(id, plate, brand, model, year, rate, trans, true, mileage);
-                case 3 -> new MPV(id, plate, brand, model, year, rate, trans, true, mileage);
-                case 4 -> new Coupe(id, plate, brand, model, year, rate, trans, true, mileage);
-                case 5 -> new EV(id, plate, brand, model, year, rate, trans, true, mileage);
-                case 6 -> new Hybrid(id, plate, brand, model, year, rate, trans, true, mileage);
-                case 7 -> new SportsCar(id, plate, brand, model, year, rate, trans, true, mileage);
-                default -> new Sedan(id, plate, brand, model, year, rate, trans, true, mileage);
-            };
+                case 2: newCar = new SUV(id, plate, brand, model, year, rate, trans, true, mileage); break;
+                case 3: newCar = new MPV(id, plate, brand, model, year, rate, trans, true, mileage); break;
+                case 4: newCar = new Coupe(id, plate, brand, model, year, rate, trans, true, mileage); break;
+                case 5: newCar = new EV(id, plate, brand, model, year, rate, trans, true, mileage); break;
+                case 6: newCar = new Hybrid(id, plate, brand, model, year, rate, trans, true, mileage); break;
+                case 7: newCar = new SportsCar(id, plate, brand, model, year, rate, trans, true, mileage); break;
+                default: newCar = new Sedan(id, plate, brand, model, year, rate, trans, true, mileage); break;
+            }
+            
             carList.add(newCar);
             System.out.println("SUCCESS: Car added!");
         } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
@@ -525,7 +528,7 @@ public class Main {
                     case 0: active = false; break;
                     default: System.out.println("Invalid option. Please Enter Option (0 - 5)");
                 }
-            } catch (Exception e) { System.out.println("Error."); scanner.nextLine(); }
+            } catch (Exception e) { System.out.println("There is no rental made yet."); scanner.nextLine(); }
         }
     }
 
